@@ -1,0 +1,41 @@
+:root {
+     font-family: 'Share Tech Mono', monospace;
+}
+
+.shadate-7 {
+     text-shadow: -0.20rem -0.20rem 0 rgb(52, 211, 153);
+}
+
+.shadate-4 {
+     text-shadow: -0.10rem -0.10rem 0 rgb(52, 211, 153);
+}
+
+.shadate-2 {
+     text-shadow: -0.05rem -0.05rem 0 rgb(52, 211, 153);
+}
+
+.box-shadate {
+     box-shadow: -0.20rem -0.20rem 0 rgb(52, 211, 153);
+}
+
+.box-shadate-sm {
+     box-shadow: -0.1rem -0.1rem 0 rgb(52, 211, 153);
+}
+
+.animate-spinner {
+     animation: spin 10s ease-in-out infinite;
+}
+
+.animate-spinner:hover {
+     animation: none;
+}
+
+@keyframes spin {
+     from {
+          transform: rotate(0deg);
+     }
+
+     to {
+          transform: rotate(360deg);
+     }
+}
