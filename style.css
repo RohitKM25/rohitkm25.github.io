@@ -26,10 +26,6 @@
      animation: spin 10s ease-in-out infinite;
 }
 
-.animate-spinner:hover {
-     animation: none;
-}
-
 @keyframes spin {
      from {
           transform: rotate(0deg);

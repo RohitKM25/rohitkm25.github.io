@@ -12,12 +12,13 @@
      <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
      <link rel="stylesheet" href="style.css">
+     <script src="script.js" defer></script>
 </head>
 
 <body class="h-screen w-screen overflow-hidden bg-sky-950 text-amber-50">
      <div class="w-screen h-screen lg:flex items-stretch lg:overflow-none overflow-y-auto overflow-none">
           <div class="w-[300px] bg-white/5 lg:flex flex-col items-stretch p-5 pb-0 lg:pb-5 hidden">
-               <img src="me.jpg" alt=""
+               <img src="me.jpg" onmouseover="onImgMouseOver(event)" onmouseleave="onImgMouseLeave(event)" alt=""
                     class="bg-amber-600 aspect-square w-full relative rounded-full animate-spinner border-4 border-amber-400" />
                <div class="flex-grow"></div>
                <div class="pt-2 lg:pt-5 sm:text-xs md:text-sm lg:text-base">
@@ -174,7 +175,7 @@
                                    Sometime 2027</p>
                               <p>Bachelor of Computer Science and Engineering</p>
                               <p class="text-sm">Chennai</p>
-                              <p class="text-sm">Aspiring to be a Computer Science Enginner in four years</p>
+                              <p class="text-sm">Aspiring to be a Computer Science Engineer in four years</p>
                          </li>
                     </ul>
                </div>
@@ -274,7 +275,7 @@
                </div>
           </div>
           <div class="lg:hidden flex flex-col md:flex-row items-stretch justify-around bg-white/5 p-10">
-               <img src="me.jpg" alt=""
+               <img src="me.jpg" onmouseover="onImgMouseOver(event)" onmouseleave="onImgMouseLeave(event)" alt=""
                     class="bg-amber-600 aspect-square w-1/4 relative rounded-full animate-spinner border-4 border-amber-400" />
                <div class="pt-2 lg:pt-5 sm:text-md lg:text-base">
                     <!-- <p class="font-semibold text-lg">Contact Me</p>
