@@ -1,25 +1,26 @@
 :root {
      font-family: 'Share Tech Mono', monospace;
+     --primary-color: rgb(245, 158, 11)
 }
 
 .shadate-7 {
-     text-shadow: -0.20rem -0.20rem 0 rgb(245, 158, 11);
+     text-shadow: -0.20rem -0.20rem 0 var(--primary-color);
 }
 
 .shadate-4 {
-     text-shadow: -0.10rem -0.10rem 0 rgb(245, 158, 11);
+     text-shadow: -0.10rem -0.10rem 0 var(--primary-color);
 }
 
 .shadate-2 {
-     text-shadow: -0.05rem -0.05rem 0 rgb(245, 158, 11);
+     text-shadow: -0.05rem -0.05rem 0 var(--primary-color);
 }
 
 .box-shadate {
-     box-shadow: -0.20rem -0.20rem 0 rgb(245, 158, 11);
+     box-shadow: -0.20rem -0.20rem 0 var(--primary-color);
 }
 
 .box-shadate-sm {
-     box-shadow: -0.1rem -0.1rem 0 rgb(245, 158, 11);
+     box-shadow: -0.1rem -0.1rem 0 var(--primary-color);
 }
 
 .animate-spinner {

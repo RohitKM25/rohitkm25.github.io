@@ -15,11 +15,18 @@
      <script src="script.js" defer></script>
 </head>
 
-<body class="h-screen w-screen overflow-hidden bg-sky-950 text-amber-50">
+<body class="h-screen w-screen overflow-hidden bg-fuchsia-950 text-amber-50 selection:bg-amber-600">
      <div class="w-screen h-screen lg:flex items-stretch lg:overflow-none overflow-y-auto overflow-none">
           <div class="w-[300px] bg-white/5 lg:flex flex-col items-stretch p-5 pb-0 lg:pb-5 hidden">
-               <img src="me.jpg" onmouseover="onImgMouseOver(event)" onmouseleave="onImgMouseLeave(event)" alt=""
-                    class="bg-amber-600 aspect-square w-full relative rounded-full animate-spinner border-4 border-amber-400" />
+               <div class="group"><img src="me.png" onmouseover="onImgMouseOver(event)"
+                         onmouseleave="onImgMouseLeave(event)" alt=""
+                         class="bg-amber-600 aspect-square w-full relative rounded-full animate-spinner border-4 border-amber-400" />
+                    <p class="hidden group-hover:block rotate-45 mt-10"><span class="shadate-4 text-4xl">&#8604;</span>
+                         i know
+                         this
+                         animation is unnecessary.
+                    </p>
+               </div>
                <div class="flex-grow"></div>
                <div class="pt-2 lg:pt-5 sm:text-xs md:text-sm lg:text-base">
                     <!-- <p class="font-semibold text-lg">Contact Me</p>
@@ -58,33 +65,48 @@
                <p class="text-2xl md:text-3xl text-white/80">Design, develop, test, deploy and manage software for
                     organisations.
                </p>
-               <hr class="border-white/60 mt-5  w-full md:w-2/3 border-t-2" />
                <div class="pt-4 flex flex-col items-stretch space-y-1">
-                    <p class="text-3xl shadate-4">Skills & Interests</p>
                     <ul class="flex flex-wrap space-x-2 space-y-2">
-                         <li class="px-4 py-1 font-semibold text-lg box-shadate bg-slate-200 text-sky-700 mt-2 ml-2">
+                         <li
+                              class="px-4 py-1 font-semibold text-lg box-shadate bg-fuchsia-50 text-fuchsia-700 mt-2 ml-2">
                               Creativity
                          </li>
-                         <li class="px-4 py-1 font-semibold text-lg box-shadate bg-slate-200 text-sky-700">Programmed
+                         <li class="px-4 py-1 font-semibold text-lg box-shadate bg-fuchsia-50 text-fuchsia-700">
+                              Programmed
                               in
                               Javascript,
                               dotNET C#,
                               Python and
                               more</li>
-                         <li class="px-4 py-1 font-semibold text-lg box-shadate bg-slate-200 text-sky-700">
+                         <li class="px-4 py-1 font-semibold text-lg box-shadate bg-fuchsia-50 text-fuchsia-700">
                               Determined
                          </li>
-                         <li class="px-4 py-1 font-semibold text-lg box-shadate bg-slate-200 text-sky-700">Problem
-                              Solving
+                         <li
+                              class="px-4 py-1 font-semibold text-lg box-shadate bg-fuchsia-50 text-fuchsia-700 relative group">
+                              Problem
+                              Solving<p
+                                   class="hidden group-hover:block -rotate-45 absolute bottom-20 text-amber-100 text-sm">
+                                   these text effects were a problem<br /><span
+                                        class="shadate-4 mt-5 text-4xl">&#10534;</span>
+                              </p>
                          </li>
-                         <li class="px-4 py-1 font-semibold text-lg box-shadate bg-slate-200 text-sky-700">
+                         <li class="px-4 py-1 font-semibold text-lg box-shadate bg-fuchsia-50 text-fuchsia-700">
                               Aspiring
                          </li>
-                         <li class="px-4 py-1 font-semibold text-lg box-shadate bg-slate-200 text-sky-700">
+                         <li class="px-4 py-1 font-semibold text-lg box-shadate bg-fuchsia-50 text-fuchsia-700">
                               Imaginative
                          </li>
-                         <li class="px-4 py-1 font-semibold text-lg box-shadate bg-slate-200 text-sky-700">
+                         <li class="px-4 py-1 font-semibold text-lg box-shadate bg-fuchsia-50 text-fuchsia-700">
                               Resolute
+                         </li>
+                         <li
+                              class="px-4 py-1 font-semibold text-lg box-shadate bg-fuchsia-50 text-fuchsia-700 relative group">
+                              Funny?<p
+                                   class="hidden group-hover:block rotate-45 absolute top-12 -right-10 text-amber-100 text-2xl">
+                                   <span class="shadate-4 mt-5 text-4xl">&#8678;</span>
+                                   ???
+
+                              </p>
                          </li>
                     </ul>
                </div>
@@ -265,7 +287,7 @@
                                         class="material-symbols-rounded text-sm">open_in_new</span></a>
                          </li>
                          <li
-                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-full md:max-w-[50vh]">
+                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-full md:max-w-[50vh] group relative">
                               <p class="px-4 font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
                                    Expenses Manager</p>
                               <p>Personal Project on Monthly Expense Managment</p><a
@@ -274,6 +296,10 @@
                                         ExpensesManager
                                         Repository</span> <span
                                         class="material-symbols-rounded text-sm">open_in_new</span></a>
+                              <p
+                                   class="hidden group-hover:block -rotate-[30deg] absolute top-32 right-0 text-amber-100 text-sm">
+                                   this didn't go<span class="shadate-4 mt-5 text-4xl">&#10548;</span><br /> well<br />
+                              </p>
                          </li>
                          <li
                               class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-full md:max-w-[50vh]">
@@ -286,7 +312,7 @@
                </div>
           </div>
           <div class="lg:hidden flex flex-col md:flex-row items-stretch justify-around bg-white/5 p-10">
-               <img src="me.jpg" onmouseover="onImgMouseOver(event)" onmouseleave="onImgMouseLeave(event)" alt=""
+               <img src="me.png" onmouseover="onImgMouseOver(event)" onmouseleave="onImgMouseLeave(event)" alt=""
                     class="bg-amber-600 aspect-square w-1/4 relative rounded-full animate-spinner border-4 border-amber-400" />
                <div class="pt-2 lg:pt-5 sm:text-md lg:text-base">
                     <!-- <p class="font-semibold text-lg">Contact Me</p>

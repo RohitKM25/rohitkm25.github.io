@@ -1,6 +1,6 @@
 function onImgMouseOver(event) {
-  event.target.src = "otherme.jpg";
+  event.target.src = "otherme.png";
 }
 function onImgMouseLeave(event) {
-  event.target.src = "me.jpg";
+  event.target.src = "me.png";
 }
