@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+     <meta charset="UTF-8">
+     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Decimal to IEEE 754 - RKM</title>
+     <script src="../../tailwind.js"></script>
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+     <link rel="stylesheet" href="../../style.css">
+</head>
+
+<body class="h-screen w-screen overflow-x-hidden bg-fuchsia-950 text-amber-50 selection:bg-amber-600">
+     <div class="flex-grow overflow-y-auto p-5 flex flex-col items-stretch">
+          <p class="text-3xl md:text-4xl shadate-4">
+               Decimal to IEEE 754 Binary Float Representation.
+          </p>
+          <p class="text-2xl md:text-3xl text-white/80">
+          </p>
+          <hr class="border-white/60 mt-5 w-full md:w-1/2 border-t-2" />
+          <div class="py-4 flex flex-col items-stretch space-y-4">
+               <label class="text-lg space-y-2 border-l-2 border-fuchsia-700 pl-2">
+                    <p class="shadate-2">Decimal Number</p>
+                    <input type="number" class="bg-fuchsia-900 px-2 py-1 w-full lg:w-[300px] focus:outline-amber-700"
+                         onkeyup="decimalNumberInputOnKeyUp(event);">
+               </label>
+               <div role="radiogroup" class="flex flex-col border-l-2 border-fuchsia-700 pl-2">
+                    <p class="shadate-2 text-lg">Choose Precision</p>
+                    <label class="space-y-2">
+                         <input type="radio" name="precision" value="sp" class="hidden peer" checked
+                              onchange="precisionInputOnChange(event);">
+                         <div
+                              class="text-sm p-4 border-2 border-transparent peer-checked:border-amber-500 peer-checked:bg-amber-600/10">
+                              <p class="shadate-2 text-lg">Single</p>
+                              <p>32 bits: 1 signed bit, 23 mantissa bits, 8 exponent bits.<br />Max:
+                                   1.000 ... 000 (23rd bit) x 10<sup>00000001</sup><br />Min: 1.111 ... 110 (23rd bit) x
+                                   10<sup>11111110</sup></p>
+                         </div>
+                    </label>
+                    <label class="space-y-2">
+                         <input type="radio" name="precision" value="dp" class="hidden peer"
+                              onchange="precisionInputOnChange(event);">
+                         <div
+                              class="text-sm p-4 border-2 border-transparent peer-checked:border-amber-500 peer-checked:bg-amber-600/10">
+                              <p class="shadate-2 text-lg">Double</p>
+                              <p>64 bits: 1 signed bit, 52 mantissa bits, 11 exponent bits.<br />Max:
+                                   1.000 ... 000 (52th bit) x 10<sup>00000000001</sup><br />Min: 1.111 ... 110 (52th
+                                   bit) x
+                                   10<sup>11111111110</sup></p>
+                         </div>
+                    </label>
+               </div>
+          </div>
+          <div class="flex flex-col space-y-2">
+               <p class="shadate-2 text-xl">Output</p>
+               <div class="flex md:text-center flex-col md:flex-row">
+                    <div class="flex flex-col px-2 md:border-r border-amber-700">
+                         <p class="text-amber-500">Sign</p>
+                         <output id="output-sign">0</output>
+                    </div>
+                    <div class="flex flex-col px-2 md:border-r border-amber-700">
+                         <p class="text-amber-500">Mantissa</p>
+                         <output id="output-mantissa" class="text-xs md:text-base">00000000000000000000000</output>
+                    </div>
+                    <div class="flex flex-col px-2">
+                         <p class="text-amber-500">Exponent</p>
+                         <output id="output-exponent">01111111</output>
+                    </div>
+               </div>
+               <p class="text-xs md:text-base">
+                    <span class="text-base">Representation:</span> <output id="output-rep-sign">+</output>1.<output
+                         id="output-rep-mantissa">00000000000000000000000</output> x 10<sup><output
+                              id="output-rep-exponent">01111111</output></sup>
+               </p>
+          </div>
+     </div>
+     <script src="script.js"></script>
+</body>
+
+</html>
