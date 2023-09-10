@@ -63,7 +63,12 @@ function convertDecToBinary() {
   let binExp = (decExp + exponentExcess).toString(2);
   binExp = "0".repeat(exponentLength - binExp.length) + binExp;
 
-  if (!frac || frac === "" || Number(frac) === 0) {
+  if (
+    !frac ||
+    frac === "" ||
+    !Number.isNaN(Number(frac)) ||
+    Number(frac) === 0
+  ) {
     if (binNum === "0") {
       return ["0".repeat(mantissaLength), "0".repeat(exponentLength)];
     }
