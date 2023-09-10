@@ -63,24 +63,21 @@ function convertDecToBinary() {
   let binExp = (decExp + exponentExcess).toString(2);
   binExp = "0".repeat(exponentLength - binExp.length) + binExp;
 
-  if (
-    !frac ||
-    frac === "" ||
-    Number.isNaN(Number(frac)) ||
-    Number(frac) === 0
-  ) {
+  if (Number.isNaN(Number(frac)) || Number(frac) === 0) {
     if (binNum === "0") {
       return ["0".repeat(mantissaLength), "0".repeat(exponentLength)];
     }
     let binMantissa =
-      slicedBinNum + "0".repeat(mantissaLength - binNum.length + 1);
+      mantissaLength > binNum.length + 1
+        ? slicedBinNum + "0".repeat(mantissaLength - binNum.length + 1)
+        : slicedBinNum;
     if (
       -(exponentExcess - 1) > decExp ||
       decExp > exponentExcess ||
       binMantissa.length > mantissaLength
     ) {
-      binMantissa = "0".repeat(mantissaLength - 1) + "1";
-      binExp = "0".repeat(exponentLength);
+      binMantissa = "0".repeat(mantissaLength);
+      binExp = "1".repeat(exponentLength);
     }
     return [binMantissa, binExp];
   }
