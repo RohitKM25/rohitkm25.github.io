@@ -1,4 +1,4 @@
-var inputDecimalNumber = 0,
+var inputDecimalNumber = "0",
   inpPrecision = "sp";
 
 const outputs = {
@@ -15,8 +15,7 @@ const outputs = {
 };
 
 function decimalNumberInputOnKeyUp(event) {
-  inputDecimalNumber =
-    event.target.value !== "" ? event.target.valueAsNumber : 0;
+  inputDecimalNumber = event.target.value ?? "0";
   getOutput();
 }
 
@@ -26,7 +25,9 @@ function precisionInputOnChange(event) {
 }
 
 function getOutput() {
-  const sign = Math.sign(inputDecimalNumber);
+  const sign = Math.sign(
+    !Number.isNaN(Number(inputDecimalNumber)) ? Number(inputDecimalNumber) : 0
+  );
   outputs.table.sign.value = sign >= 0 ? 0 : 1;
   outputs.rep.sign.value = sign >= 0 ? "+" : "-";
 
@@ -40,13 +41,13 @@ function getOutput() {
 }
 
 function convertDecToBinary() {
-  const [num, frac] = inputDecimalNumber.toString().split(".");
+  const [num, frac] = inputDecimalNumber.split(".");
   const mantissaLength = inpPrecision === "sp" ? 23 : 52;
   const exponentLength = inpPrecision === "sp" ? 8 : 11;
+  const exponentExcess = inpPrecision === "sp" ? 127 : 1023;
 
   let binNum = "";
-
-  if (num !== "0") {
+  if (!Number.isNaN(Number(num)) && Number(num) !== 0) {
     let r,
       n = Number(num);
     n *= Math.sign(n);
@@ -57,14 +58,27 @@ function convertDecToBinary() {
     }
   } else binNum = "0";
 
-  let binExp = (binNum.slice(1).length + 127).toString(2);
+  let slicedBinNum = binNum.slice(1);
+  const decExp = slicedBinNum.length;
+  let binExp = (decExp + exponentExcess).toString(2);
   binExp = "0".repeat(exponentLength - binExp.length) + binExp;
 
-  if (!frac || frac === "" || Number(frac) === 0)
-    return [
-      "0".repeat(mantissaLength - binNum.length) + binNum,
-      binNum === "0" ? "0".repeat(exponentLength) : binNum,
-    ];
+  if (!frac || frac === "" || Number(frac) === 0) {
+    if (binNum === "0") {
+      return ["0".repeat(mantissaLength), "0".repeat(exponentLength)];
+    }
+    let binMantissa =
+      slicedBinNum + "0".repeat(mantissaLength - binNum.length + 1);
+    if (
+      -(exponentExcess - 1) > decExp ||
+      decExp > exponentExcess ||
+      binMantissa.length > mantissaLength
+    ) {
+      binMantissa = "0".repeat(mantissaLength - 1) + "1";
+      binExp = "0".repeat(exponentLength);
+    }
+    return [binMantissa, binExp];
+  }
 
   const numcount = mantissaLength - binNum.length + 1;
   let binFrac = "";
@@ -76,27 +90,25 @@ function convertDecToBinary() {
   while (i < currMatissaLength) {
     n *= 2;
     isg1 = n >= 1;
-    console.log(isg1);
     contains1 ||= isg1;
     binFrac += isg1 ? "1" : "0";
     n -= isg1 ? 1 : 0;
     if (!contains1) currMatissaLength += 1;
-    console.log(currMatissaLength);
     i++;
   }
-
-  console.log(binFrac);
-
-  if (binNum.length === 1 && binFrac.indexOf("1") !== -1) {
+  if (binNum === "0") {
     const ptmovecount = binFrac.indexOf("1") + 1;
     const slicedBinFrac = binFrac.slice(ptmovecount);
-    binExp = (-ptmovecount + 127).toString(2);
+    binExp = (-ptmovecount + exponentExcess).toString(2);
     binExp = "0".repeat(exponentLength - binExp.length) + binExp;
+    console.log(1, -ptmovecount + exponentExcess);
+    if (ptmovecount >= exponentExcess) {
+      return ["0".repeat(mantissaLength - 1) + "1", "0".repeat(exponentLength)];
+    }
     return [
       slicedBinFrac + "0".repeat(mantissaLength - slicedBinFrac.length),
       binExp,
     ];
   }
-
-  return [`${binNum.slice(1)}${binFrac}`, binExp];
+  return [`${binNum.slice(1)}${binFrac.slice(0, mantissaLength)}`, binExp];
 }
