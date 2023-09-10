@@ -66,7 +66,7 @@ function convertDecToBinary() {
   if (
     !frac ||
     frac === "" ||
-    !Number.isNaN(Number(frac)) ||
+    Number.isNaN(Number(frac)) ||
     Number(frac) === 0
   ) {
     if (binNum === "0") {
