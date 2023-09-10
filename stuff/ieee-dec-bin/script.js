@@ -68,7 +68,7 @@ function convertDecToBinary() {
       return ["0".repeat(mantissaLength), "0".repeat(exponentLength)];
     }
     let binMantissa =
-      mantissaLength > binNum.length + 1
+      mantissaLength > binNum.length
         ? slicedBinNum + "0".repeat(mantissaLength - binNum.length + 1)
         : slicedBinNum;
     if (
