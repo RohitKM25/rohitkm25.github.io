@@ -16,6 +16,8 @@ const outputs = {
 
 function decimalNumberInputOnKeyUp(event) {
   inputDecimalNumber = event.target.value ?? "0";
+  document.getElementById("output-input-length").value =
+    event.target.value.replace(".", "").length;
   getOutput();
 }
 
@@ -46,71 +48,78 @@ function convertDecToBinary() {
   const exponentLength = inpPrecision === "sp" ? 8 : 11;
   const exponentExcess = inpPrecision === "sp" ? 127 : 1023;
 
-  let binNum = "";
-  if (!Number.isNaN(Number(num)) && Number(num) !== 0) {
-    let r,
-      n = Number(num);
-    n *= Math.sign(n);
-    while (n != 0) {
-      r = n % 2;
-      n = parseInt(n / 2);
-      binNum = r.toString() + binNum;
-    }
-  } else binNum = "0";
+  const binInt = convertIntegerDecimalToBinary(num);
+  const binFrac = convertFractionDecimalToBinary(frac, mantissaLength);
 
-  let slicedBinNum = binNum.slice(1);
-  const decExp = slicedBinNum.length;
-  let binExp = (decExp + exponentExcess).toString(2);
+  if (!binInt || !binFrac)
+    return ["0".repeat(mantissaLength - 1) + "1", "1".repeat(exponentLength)];
+  else if (binInt === "0" && binFrac === "0")
+    return ["0".repeat(mantissaLength), "0".repeat(exponentLength)];
+
+  let bin = `${binInt}.${binFrac}`;
+
+  const indexOfPointBin = bin.indexOf(".");
+  const indexOfOneBin = bin.indexOf("1");
+  const expBias = indexOfPointBin > indexOfOneBin;
+  const exp = expBias ? indexOfPointBin - 1 : -indexOfOneBin + 1;
+
+  bin = bin.replace(".", "");
+  bin = bin.slice(bin.indexOf("1") + 1);
+
+  if (exp > exponentExcess)
+    return ["0".repeat(mantissaLength), "1".repeat(exponentLength)];
+  else if (exp < 1 - exponentExcess)
+    return ["0".repeat(mantissaLength - 1) + "1", "0".repeat(exponentLength)];
+
+  let binExp = (exp + exponentExcess).toString(2);
   binExp = "0".repeat(exponentLength - binExp.length) + binExp;
 
-  if (Number.isNaN(Number(frac)) || Number(frac) === 0) {
-    if (binNum === "0") {
-      return ["0".repeat(mantissaLength), "0".repeat(exponentLength)];
-    }
-    let binMantissa =
-      mantissaLength > binNum.length
-        ? slicedBinNum + "0".repeat(mantissaLength - binNum.length + 1)
-        : slicedBinNum;
-    if (
-      -(exponentExcess - 1) > decExp ||
-      decExp > exponentExcess ||
-      binMantissa.length > mantissaLength
-    ) {
-      binMantissa = "0".repeat(mantissaLength);
-      binExp = "1".repeat(exponentLength);
-    }
-    return [binMantissa, binExp];
-  }
+  bin =
+    bin.slice(0, mantissaLength) +
+    (mantissaLength > bin.length
+      ? "0".repeat(mantissaLength - bin.length)
+      : "");
 
-  const numcount = mantissaLength - binNum.length + 1;
-  let binFrac = "";
-  let n = Number("." + frac),
+  return [bin, binExp];
+}
+
+function convertIntegerDecimalToBinary(num) {
+  if (Number.isNaN(Number(num))) return undefined;
+  if (Number(num) === 0) return "0";
+  let binInt = "";
+  let r,
+    n = BigInt(num);
+  n *= n >= 0 ? 1n : -1n;
+  while (n != 0) {
+    console.log(r, n);
+    r = Number(n % 2n);
+    n = BigInt(n / 2n);
+    binInt = r.toString() + binInt;
+  }
+  console.log(binInt);
+  return binInt;
+}
+
+function convertFractionDecimalToBinary(frac, mantissaLength) {
+  let mfrac = !frac ? "" : frac;
+
+  if (Number.isNaN(Number(mfrac))) return undefined;
+  if (Number(mfrac) === 0) return "0";
+
+  let binFrac = "",
+    n = Number("." + frac),
     i = 0,
     contains1 = false,
     isg1 = false,
-    currMatissaLength = numcount;
-  while (i < currMatissaLength) {
+    currMantissaLength = mantissaLength;
+  while (i < currMantissaLength) {
     n *= 2;
     isg1 = n >= 1;
+    currMantissaLength += contains1 ? 0 : 1;
     contains1 ||= isg1;
     binFrac += isg1 ? "1" : "0";
     n -= isg1 ? 1 : 0;
-    if (!contains1) currMatissaLength += 1;
     i++;
   }
-  if (binNum === "0") {
-    const ptmovecount = binFrac.indexOf("1") + 1;
-    const slicedBinFrac = binFrac.slice(ptmovecount);
-    binExp = (-ptmovecount + exponentExcess).toString(2);
-    binExp = "0".repeat(exponentLength - binExp.length) + binExp;
-    console.log(1, -ptmovecount + exponentExcess);
-    if (ptmovecount >= exponentExcess) {
-      return ["0".repeat(mantissaLength - 1) + "1", "0".repeat(exponentLength)];
-    }
-    return [
-      slicedBinFrac + "0".repeat(mantissaLength - slicedBinFrac.length),
-      binExp,
-    ];
-  }
-  return [`${binNum.slice(1)}${binFrac.slice(0, mantissaLength)}`, binExp];
+  return binFrac;
 }
