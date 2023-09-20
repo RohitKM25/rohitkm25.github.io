@@ -30,10 +30,6 @@
                </div>
                <div class="flex-grow"></div>
                <div class="pt-2 lg:pt-5 sm:text-xs md:text-sm lg:text-base">
-                    <!-- <p class="font-semibold text-lg">Contact Me</p>
-                    <hr class="border-white/60 w-1/2 border-t-2 -ml-5" />
-                    <hr class="border-white/60 mt-0.5 w-2/5 border-t-2 -ml-5" />
-                    <hr class="border-white/60 mt-0.5 w-1/3 border-t-2 -ml-5" /> -->
                     <ul class="flex flex-col items-left space-y-2 py-2 lg:-mx-2">
                          <li class="inline-flex items-center space-x-2"><span class="material-symbols-rounded text-lg">
                                    home_pin
@@ -66,7 +62,7 @@
                <p class="text-2xl md:text-3xl text-white/80">Design, develop, test, deploy and manage software for
                     organisations.
                </p>
-               <div class="pt-4 flex flex-col items-stretch space-y-1">
+               <div class="pt-4 flex flex-col items-stretch space-y-1 -ml-1">
                     <ul class="flex flex-wrap space-x-2 space-y-2">
                          <li
                               class="px-4 py-1 font-semibold text-lg box-shadate bg-fuchsia-50 text-fuchsia-700 mt-2 ml-2">
@@ -212,10 +208,12 @@
                <hr class="border-white/60 mt-5 w-full md:w-1/2 border-t-2" />
                <div class="pt-4 flex flex-col items-stretch space-y-1">
                     <p class="text-3xl shadate-4">Activities</p>
-                    <ul class="flex md:flex-row flex-col md:flex-wrap space-x-2 space-y-2">
+                    <ul id="activities-ul"
+                         class="flex flex-row md:flex-wrap space-x-2 space-y-2 overflow-x-auto py-2 snap-x snap-mandatory"
+                         onmousewheel="onActivitiesUlMouseWheel(event)">
                          <li
-                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-full md:max-w-[50vh] mt-2 ml-2">
-                              <p class="px-4 font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
+                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-[30vw] md:min-w-0 min-w-[90%] snap-start mt-2 ml-2">
+                              <p class="px-4 text-base font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
                                    Calax UWP</p>
                               <p>A Universal Windows Platform app written in .NET C# for calculation of income tax based
                                    on Tax Regimes and for different financial years.- In Development</p>
@@ -225,8 +223,8 @@
                                         class="material-symbols-rounded text-sm">open_in_new</span></a>
                          </li>
                          <li
-                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-full md:max-w-[50vh] mt-2 ml-2">
-                              <p class="px-4 font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
+                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-[30vw] md:min-w-0 min-w-[90%] snap-start mt-2 ml-2">
+                              <p class="px-4 text-base font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
                                    Querist .NET Library</p>
                               <p>Library for styled CLI user prompts</p>
                               <a class="text-amber-200 flex items-center space-x-2"
@@ -235,8 +233,8 @@
                                         class="material-symbols-rounded text-sm">open_in_new</span></a>
                          </li>
                          <li
-                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-full md:max-w-[50vh]">
-                              <p class="px-4 font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
+                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-[30vw] md:min-w-0 min-w-[90%] snap-start">
+                              <p class="px-4 text-base font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
                                    Home Chat</p>
                               <p>.NET Blazor WASM and SQL based LAN Chat.</p>
                               <a class="text-amber-200 flex items-center space-x-2"
@@ -245,20 +243,20 @@
                                         class="material-symbols-rounded text-sm">open_in_new</span></a>
                          </li>
                          <li
-                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-full md:max-w-[50vh]">
-                              <p class="px-4 font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
+                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-[30vw] md:min-w-0 min-w-[90%] snap-start">
+                              <p class="px-4 text-base font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
                                    L U KRISHNAN & CO Website</p>
                               <p>Potfolio Website for L U Krishnan & Co - In Development</p>
                          </li>
                          <li
-                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-full md:max-w-[50vh]">
-                              <p class="px-4 font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
+                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-[30vw] md:min-w-0 min-w-[90%] snap-start">
+                              <p class="px-4 text-base font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
                                    L U KRISHNAN & CO Desktop</p>
                               <p>Office Manager using Microsoft Sharepoint and Exchange</p>
                          </li>
                          <li
-                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-full md:max-w-[50vh]">
-                              <p class="px-4 font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
+                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-[30vw] md:min-w-0 min-w-[90%] snap-start">
+                              <p class="px-4 text-base font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
                                    Bizzo Technologies Website</p>
                               <p>Potfolio Website for Bizzo Technologies - In Development
                               </p>
@@ -269,8 +267,8 @@
                                         class="material-symbols-rounded text-sm">open_in_new</span></a>
                          </li>
                          <li
-                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-full md:max-w-[50vh]">
-                              <p class="px-4 font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
+                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-[30vw] md:min-w-0 min-w-[90%] snap-start">
+                              <p class="px-4 text-base font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
                                    Chemical Elements</p>
                               <p>Personal Project on the elements of the periodic table</p>
                               <a class="text-amber-200 flex items-center space-x-2"
@@ -280,8 +278,8 @@
                                         class="material-symbols-rounded text-sm">open_in_new</span></a>
                          </li>
                          <li
-                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-full md:max-w-[50vh]">
-                              <p class="px-4 font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
+                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-[30vw] md:min-w-0 min-w-[90%] snap-start">
+                              <p class="px-4 text-base font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
                                    Flight Ticket Booking</p>
                               <p>CBSC Project in Computer Science</p>
                               <a class="text-amber-200 flex items-center space-x-2"
@@ -291,8 +289,8 @@
                                         class="material-symbols-rounded text-sm">open_in_new</span></a>
                          </li>
                          <li
-                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-full md:max-w-[50vh] group relative">
-                              <p class="px-4 font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
+                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-[30vw] md:min-w-0 min-w-[90%] snap-start group relative">
+                              <p class="px-4 text-base font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
                                    Expenses Manager</p>
                               <p>Personal Project on Monthly Expense Managment</p><a
                                    class="text-amber-200 flex items-center space-x-2"
@@ -306,8 +304,8 @@
                               </p>
                          </li>
                          <li
-                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-full md:max-w-[50vh] group relative">
-                              <p class="px-4 font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
+                              class="border-2 text-sm p-2 pt-0 border-amber-100 pl-2 flex flex-col space-y-2 max-w-[30vw] md:min-w-0 min-w-[90%] snap-start group relative">
+                              <p class="px-4 text-base font-bold py-0.5 bg-amber-100 text-amber-900 w-fit">
                                    Top Coder</p>
                               <p>Consistently won 1st prize in the Top Coder in Python (since 2021) organised by my
                                    school.</p>
@@ -320,15 +318,32 @@
                </div>
           </div>
           <div class="lg:hidden flex flex-col md:flex-row items-stretch justify-around bg-white/5 p-10">
-               <div class="group relative">
-                    <img src="me.png" onmouseover="onImgMouseOver(event)" onmouseleave="onImgMouseLeave(event)" alt=""
-                         class="bg-amber-600 aspect-square w-1/4 relative rounded-full animate-spinner border-4 border-amber-400" />
-                    <p class="hidden group-hover:block bg-fuchsia-900 p-2 -rotate-45 absolute text-sm -top-4 right-16">
-                         <span class="shadate-4 text-3xl">&#8604;</span>
-                         i know
-                         this
-                         animation<br /> is unnecessary.
-                    </p>
+               <div>
+                    <div class="group relative">
+                         <img src="me.png" onmouseover="onImgMouseOver(event)" onmouseleave="onImgMouseLeave(event)"
+                              alt=""
+                              class="bg-amber-600 aspect-square w-1/4 relative rounded-full animate-spinner border-4 border-amber-400" />
+                         <p
+                              class="hidden group-hover:block bg-fuchsia-900 p-2 -rotate-45 absolute text-sm -top-4 right-16">
+                              <span class="shadate-4 text-3xl">&#8604;</span>
+                              i know
+                              this
+                              animation<br /> is unnecessary.
+                         </p>
+                    </div>
+                    <!-- <div class="px-4">
+                         <p class="text-lg shadate-2 pl-1">Stuff</p>
+                         <div class="flex flex-col text-xs space-y-1 -ml-5">
+                              <a class="block border-l-2 select-none px-2 py-1 border-amber-500 hover:bg-amber-600/10 active:bg-amber-600/20"
+                                   href="stuff/ieee-dec-bin">
+                                   Decimal to IEEE
+                                   754 Binary
+                                   Representation</a>
+                              <a class="block border-l-2 select-none px-2 py-1 border-amber-500 hover:bg-amber-600/10 active:bg-amber-600/20"
+                                   href="stuff/num-sys-conversion">
+                                   Number System Conversion</a>
+                         </div>
+                    </div> -->
                </div>
                <div class="pt-2 lg:pt-5 sm:text-md lg:text-base">
                     <!-- <p class="font-semibold text-lg">Contact Me</p>
