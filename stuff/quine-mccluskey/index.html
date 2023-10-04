@@ -33,7 +33,7 @@
                <div class=" border-l-2 border-fuchsia-700 pl-2">
                     <label class="text-lg space-y-2">
                          <p class="shadate-2 text-lg">Enter Minterms</p>
-                         <div class="flex items-stretch space-x-2" onkeyup="expressionInputOnKeyUp(event);">
+                         <div class="flex items-stretch space-x-2">
                               <div class="flex bg-fuchsia-900 w-full lg:w-[400px] px-2 py-1 space-x-2 items-center">
                                    <p class="bg-fuchsia-900 py-1 text-xl">&sum;
                                    </p>
@@ -42,29 +42,45 @@
                                         id="minterms-input">
                                    <p class="bg-fuchsia-900 py-1">)
                                    </p>
-                              </div><button class="bg-amber-500/10 px-3 hover:bg-amber-500/30">Execute</button>
+                              </div><button class="bg-amber-500/10 px-3 hover:bg-amber-500/30"
+                                   onclick="executeButtonOnClick();">Execute</button>
                          </div>
                     </label>
                </div>
           </div>
-          <div class="flex flex-col space-y-2">
-               <p class="shadate-2 text-xl">Output</p>
-               <div id="map-container">
-                    <div class="place-self-stretch relative h-16 w-16">
-                         <output id="map-row-term" class="text-sm absolute bottom-1 left-2">A</output>
-                         <output id="map-col-term" class="text-sm absolute top-1 right-2">B</output>
-                         <div
-                              class="w-[5.8rem] h-16 absolute rotate-45 top-[1.44rem] -left-9 border-t border-amber-500">
+          <div class="flex flex-col space-y-2 md:grid grid-cols-2">
+               <div class="flex flex-col space-y-2 px-2">
+                    <div class="shadate-2 text-xl flex items-center">
+                         <p>Map:&ThinSpace;</p><span id="map-curr-groups-state-title" class="text-base"></span>
+                    </div>
+                    <div id="map-container">
+                         <div class="place-self-stretch relative h-16 w-16">
+                              <output id="map-row-term" class="text-sm absolute bottom-1 left-2">A</output>
+                              <output id="map-col-term" class="text-sm absolute top-1 right-2">B</output>
+                              <div
+                                   class="w-[5.8rem] h-16 absolute rotate-45 top-[1.44rem] -left-9 border-t border-amber-500">
+                              </div>
+                         </div>
+                         <div id="map-col-header-container">
+                         </div>
+                         <div id="map-row-header-container">
+                         </div>
+                         <div id="map-content-container">
                          </div>
                     </div>
-                    <div id="map-col-header-container">
-                    </div>
-                    <div id="map-row-header-container">
-                    </div>
-                    <div id="map-content-container">
+               </div>
+               <div class="flex flex-col space-y-2">
+                    <p class="shadate-2 text-xl">Group States</p>
+                    <ul class="flex flex-col" id="groups-states-selection-list">
+                    </ul>
+                    <div id="curr-groups-state-value" class="text-xs ">
+
                     </div>
                </div>
-               <output id="output-expression" class="text-4xl shadate-4 pt-5"></output>
+               <div class="flex flex-col space-y-2 pt-5 col-span-2">
+                    <p class="shadate-2 text-2xl">Output</p>
+                    <output id="output-expression" class="text-4xl shadate-4"></output>
+               </div>
           </div>
      </div>
      <script src="script.js"></script>

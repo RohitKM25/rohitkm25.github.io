@@ -17,6 +17,13 @@ const mapColHeaderContainer = document.getElementById(
 const mapRowHeaderContainer = document.getElementById(
   "map-row-header-container"
 );
+const mapCurrGroupStateTitle = document.getElementById(
+  "map-curr-groups-state-title"
+);
+const groupStatesSelectionList = document.getElementById(
+  "groups-states-selection-list"
+);
+const currGroupsStateValue = document.getElementById("curr-groups-state-value");
 const outputExpression = document.getElementById("output-expression");
 
 const expressions = [
@@ -27,9 +34,9 @@ const expressions = [
 ];
 const isStateLoggingEnabled = true;
 //var expression = "0,5,7,8,9,10,11,14,15";
-var expression = expressions[0];
-var variables = ["A", "B", "C", "D"];
-var groupsSets = [];
+var expression = "2,6,8,9,10,11,14,15";
+var variables = ["P", "Q", "R", "S"];
+var groupsSetsState = [];
 var inputMinTerms = [];
 var map = [];
 var getReducedGroupSetImplicantStatesRunCount = 0;
@@ -39,9 +46,10 @@ const mintermsInputElement = document.getElementById("minterms-input");
 
 getOutput();
 
-function expressionInputOnKeyUp(event) {
-  if (event.target.value === "") return;
-  expression = event.target.value;
+function executeButtonOnClick() {
+  if (mintermsInputElement.value === "" || variablesInputElement === "") return;
+  expression = mintermsInputElement.value;
+  variables = variablesInputElement.value.split(",");
   getOutput();
 }
 
@@ -49,6 +57,7 @@ function getOutput() {
   if (expression === "") return;
   if (variables.length < 2) return;
   inputMinTerms = expression.split(",").map((v) => Number(v));
+  groupsSetsState = [];
   const binMinTermsCombinations = inputMinTerms.map((v) =>
     getBinary(v, variables.length)
   );
@@ -63,9 +72,21 @@ function getOutput() {
     []
   );
   const groupingBy1Count = getGroupingBy1Count(binMinTermsCombinations);
-  groupsSets.push(groupingBy1Count);
-  while (groupsSets[groupsSets.length - 1].length !== 0)
-    groupsSets.push(getGroupingByAdj(groupsSets[groupsSets.length - 1]));
+  let groupsSets = [groupingBy1Count];
+
+  groupsSetsState.push(["Grouping by Count of One", groupingBy1Count]);
+
+  let gbaCount = 1;
+  while (groupsSets[groupsSets.length - 1].length !== 0) {
+    const currGrouping = getGroupingByAdj(groupsSets[groupsSets.length - 1]);
+    groupsSets.push(currGrouping);
+    if (currGrouping.length !== 0)
+      groupsSetsState.push([
+        `Grouping by Adjacents: ${gbaCount}`,
+        currGrouping,
+      ]);
+    gbaCount++;
+  }
   groupsSets = groupsSets.slice(0, groupsSets.length - 1);
 
   const compiledGroupSet = [...groupsSets[groupsSets.length - 1]];
@@ -85,6 +106,8 @@ function getOutput() {
     });
   }
 
+  groupsSetsState.push(["Compiled Groups", compiledGroupSet]);
+
   const uniqueGroupsSet = [];
   for (let i = 0; i < compiledGroupSet.length; i++) {
     const group = compiledGroupSet[i];
@@ -99,9 +122,8 @@ function getOutput() {
       }
     });
   }
-  groupsSets.push(uniqueGroupsSet);
 
-  console.log(groupsSets);
+  groupsSetsState.push(["Unique Groups", uniqueGroupsSet]);
 
   const groupSetMinTerms = [];
   uniqueGroupsSet.forEach((g) => {
@@ -113,86 +135,22 @@ function getOutput() {
       ],
     });
   });
-  console.log(groupSetMinTerms);
 
-  const [groupSetImplicantStates, reducedGroupSetUnusedMinTerms] =
-    getReducedGroupSetImplicantStates(groupSetMinTerms, inputMinTerms);
+  const groupSetImplicantStates = getReducedGroupSetImplicantStates(
+    groupSetMinTerms,
+    inputMinTerms
+  );
 
-  // const reducedGroupSetImplicantStates = groupSetImplicantStates.filter(
-  //   (v) => Object.values(v)[0][3].length > 0
-  // );
-  // const reducedGroupSetUnusedMinTerms = inputMinTerms
-  //   .filter(
-  //     (i) =>
-  //       !Array.from(
-  //         new Set(
-  //           reducedGroupSetImplicantStates.reduce(
-  //             (p, c) => p.concat(Object.values(c)[0][1]),
-  //             []
-  //           )
-  //         )
-  //       ).includes(Number(i))
-  //   )
-  //   .map((n) => Number(n));
-  // console.log(reducedGroupSetUnusedMinTerms);
+  groupsSetsState.push([
+    "Reduced Groups",
+    getGroupSetFromImplicantStates(groupSetImplicantStates),
+  ]);
+  showGroupsSetsStateOutput(groupsSetsState);
 
-  // if (reducedGroupSetUnusedMinTerms.length > 0) {
-  //   const currGroupSetMinTerms = groupSetImplicantStates
-  //     .filter((v) => Object.values(v)[0][3].length === 0)
-  //     .map((v) => {
-  //       return { [Object.keys(v)[0]]: Object.values(v)[0].slice(0, 2) };
-  //     });
-
-  //   let currReducedGroupSetImplicantsStates = [];
-  //   currGroupSetMinTerms.forEach((g) => {
-  //     const groupItemKey = Object.keys(g)[0];
-  //     const implicants = g[groupItemKey][1];
-  //     const implicantsCount = implicants.length;
-  //     const primeImplicants = [];
-  //     implicants.forEach((cImp) => {
-  //       const isImpPrime = reducedGroupSetUnusedMinTerms.includes(cImp);
-  //       if (isImpPrime) primeImplicants.push(cImp);
-  //     });
-  //     currReducedGroupSetImplicantsStates.push({
-  //       [groupItemKey]: [
-  //         g[groupItemKey][0],
-  //         implicants,
-  //         implicantsCount,
-  //         primeImplicants,
-  //       ],
-  //     });
-  //   });
-
-  //   currReducedGroupSetImplicantsStates = currReducedGroupSetImplicantsStates
-  //     .filter((v) => Object.values(v)[0][3].length > 0)
-  //     .sort(
-  //       (a, b) => Object.values(b)[0][3].length - Object.values(a)[0][3].length
-  //     );
-  //   let filteredCurrReducedGroupSetImplicantsStates = [];
-  //   const firstCRGSIS = currReducedGroupSetImplicantsStates[0];
-  //   filteredCurrReducedGroupSetImplicantsStates.push(firstCRGSIS);
-  //   filteredCurrReducedGroupSetImplicantsStates =
-  //     filteredCurrReducedGroupSetImplicantsStates.concat(
-  //       currReducedGroupSetImplicantsStates.filter(
-  //         (v) =>
-  //           !Object.values(v)[0][3].reduce(
-  //             (p, ci) => Object.values(firstCRGSIS)[0][3].includes(ci) && p,
-  //             true
-  //           )
-  //       )
-  //     );
-
-  //   const res = groupSetImplicantStates
-  //     .concat(filteredCurrReducedGroupSetImplicantsStates)
-  //     .map((v) =>
-  //       repFromExpression(expFromBinRep(Object.values(v)[0][0], variables))
-  //     );
-  //   console.log(res);
-  // } else {
   const res = groupSetImplicantStates.map((v) =>
     repFromExpression(expFromBinRep(Object.values(v)[0][0], variables))
   );
-  console.log(res);
+  outputExpression.value = res.join(" + ");
 }
 
 function tabulateGroupSet(gmt, title) {
@@ -209,17 +167,7 @@ function tabulateGroupSet(gmt, title) {
   console.table(obj);
 }
 
-function getReducedGroupSetImplicantStates(
-  groupSetMinTerms,
-  sourceMinTerms,
-  prevGroupSetImplicantStates
-) {
-  // if (getReducedGroupSetImplicantStatesRunCount > 2) return;
-  getReducedGroupSetImplicantStatesRunCount++;
-  console.log(
-    `getReducedGroupSetImplicantStates>>> ${getReducedGroupSetImplicantStatesRunCount} ------------------------`
-  );
-
+function getReducedGroupSetImplicantStates(groupSetMinTerms, sourceMinTerms) {
   const groupSetImplicantStates = [];
   groupSetMinTerms.forEach((g) => {
     const groupItemKey = Object.keys(g)[0];
@@ -245,11 +193,6 @@ function getReducedGroupSetImplicantStates(
       ],
     });
   });
-  console.log(sourceMinTerms);
-  tabulateGroupSet(
-    groupSetImplicantStates,
-    `Group Set Implicant States ${getReducedGroupSetImplicantStatesRunCount}`
-  );
 
   let reducedGroupSetImplicantStates = groupSetImplicantStates.filter(
     (v) => Object.values(v)[0][3].length > 0
@@ -258,6 +201,7 @@ function getReducedGroupSetImplicantStates(
   if (reducedGroupSetImplicantStates.length === 0)
     reducedGroupSetImplicantStates = [];
   let tempGroupSetImplicantStates = groupSetImplicantStates;
+
   while (true) {
     const currMinTerms = inputMinTerms
       .filter(
@@ -283,7 +227,7 @@ function getReducedGroupSetImplicantStates(
       ])
       .filter((v) => v[2] > 0)
       .sort((a, b) => a[2] - b[2]);
-    console.log(currMinTerms, groupSetWeightages);
+
     if (groupSetWeightages.length > 0) {
       const largestWeightage =
         groupSetWeightages[groupSetWeightages.length - 1];
@@ -294,59 +238,34 @@ function getReducedGroupSetImplicantStates(
     } else break;
   }
 
-  if (prevGroupSetImplicantStates)
-    reducedGroupSetImplicantStates = reducedGroupSetImplicantStates.concat(
-      prevGroupSetImplicantStates
-    );
-  tabulateGroupSet(
-    reducedGroupSetImplicantStates,
-    `Reduced Group Set Implicant States ${getReducedGroupSetImplicantStatesRunCount}`
-  );
+  return reducedGroupSetImplicantStates;
+}
 
-  const reducedGroupSetUnusedMinTerms = inputMinTerms
-    .filter(
-      (i) =>
-        !Array.from(
-          new Set(
-            reducedGroupSetImplicantStates.reduce(
-              (p, c) => p.concat(Object.values(c)[0][1]),
-              []
-            )
-          )
-        ).includes(i)
+function onGroupStateListItemClick(gss, index) {
+  const currItem = gss[index];
+  currGroupsStateValue.innerHTML = gss[index][1]
+    .map(
+      (v, i) =>
+        `<p class="font-semibold">Group ${i}: </p>` +
+        Object.keys(v)
+          .map((k) => `&nbsp;&nbsp;${k}: ${v[k]}`)
+          .join(",<br/>")
     )
-    .map((n) => Number(n));
-  console.log(reducedGroupSetUnusedMinTerms);
+    .join("<br/>");
+  mapCurrGroupStateTitle.textContent = currItem[0];
+}
 
-  if (reducedGroupSetUnusedMinTerms.length > 0) {
-    const currGroupSetMinTerms = groupSetImplicantStates
-      .filter((v) => Object.values(v)[0][3].length === 0)
-      .map((v) => {
-        return { [Object.keys(v)[0]]: Object.values(v)[0].slice(0, 2) };
-      });
-    tabulateGroupSet(
-      currGroupSetMinTerms,
-      `Curr Group Set Min Terms ${getReducedGroupSetImplicantStatesRunCount}`
-    );
-    const [nextGroupSetImplicantStates, nextReducedGroupSetUnusedMinTerms] =
-      getReducedGroupSetImplicantStates(
-        currGroupSetMinTerms,
-        reducedGroupSetUnusedMinTerms,
-        reducedGroupSetImplicantStates
-      );
-    tabulateGroupSet(
-      nextGroupSetImplicantStates,
-      `Next Group Set Implicant States ${getReducedGroupSetImplicantStatesRunCount}`
-    );
-    if (
-      nextGroupSetImplicantStates.reduce(
-        (p, c) => Object.values(c)[0][3].length > 0 || p,
-        false
-      )
-    )
-      return [nextGroupSetImplicantStates, reducedGroupSetUnusedMinTerms];
-  }
-  return [reducedGroupSetImplicantStates, reducedGroupSetUnusedMinTerms];
+function showGroupsSetsStateOutput(gss) {
+  groupStatesSelectionList.innerHTML = "";
+  onGroupStateListItemClick(gss, 0);
+  gss.forEach((v, i) => {
+    const li = document.createElement("li");
+    li.className =
+      "px-3 py-0.5 select-none border-l-2 border-amber-500/10 hover:border-amber-600 hover:bg-amber-500/10";
+    li.textContent = v[0];
+    li.onclick = () => onGroupStateListItemClick(gss, i);
+    groupStatesSelectionList.appendChild(li);
+  });
 }
 
 function getBinary(num, nBits) {
@@ -391,6 +310,13 @@ function getGroupingByAdj(groups) {
     if (Object.values(currGroup).length > 0) adjGroups.push(currGroup);
   });
   return adjGroups;
+}
+
+function getGroupSetFromImplicantStates(implicantStates) {
+  return implicantStates.map((v) => {
+    const key = Object.keys(v)[0];
+    return { [key]: v[key][0] };
+  });
 }
 
 function getMinTerms(expression, currVariables) {
@@ -607,90 +533,4 @@ function combinationExists(comb, currInputMinTerms) {
     if (exists) break;
   }
   return exists;
-}
-
-function rcTermEquals(a, b) {
-  return a[0] === b[0] && a[1] === b[1];
-}
-
-function sortGroup(group) {
-  return group.sort((a, b) => {
-    const fT = a[0] - b[0];
-    const sT = a[1] - b[1];
-    return fT === 0 ? sT : fT;
-  });
-}
-
-function checkValidAdj(groups, group, mapRowCount, mapColCount) {
-  const log2Length = Math.log(group.length) / Math.log(2);
-  // console.log(
-  //   group,
-  //   group.length > 1,
-  //   parseInt(log2Length) === log2Length,
-  //   group
-  //     .slice(1)
-  //     .reduce(
-  //       (p, c) => [
-  //         ((c[0] - p[1][0] === mapRowCount - 1 ||
-  //           Math.abs(c[0] - p[1][0]) <= 1) &&
-  //         (c[1] - p[1][1] === mapColCount - 1 || Math.abs(c[1] - p[1][1]) <= 1)
-  //           ? true
-  //           : false) && p[0],
-  //         c,
-  //       ],
-  //       [true, group[0]]
-  //     )[0],
-  //   groups.findIndex((g) =>
-  //     g.reduce(
-  //       (p, c) => group.findIndex((pt) => rcTermEquals(pt, c)) !== -1 && p,
-  //       true
-  //     )
-  //   ) === -1
-  // );
-  return (
-    group.length > 1 &&
-    parseInt(log2Length) === log2Length &&
-    group
-      .slice(1)
-      .reduce(
-        (p, c) => [
-          ((c[0] - p[1][0] === mapRowCount - 1 ||
-            Math.abs(c[0] - p[1][0]) <= 1) &&
-          (c[1] - p[1][1] === mapColCount - 1 || Math.abs(c[1] - p[1][1]) <= 1)
-            ? true
-            : false) && p[0],
-          c,
-        ],
-        [true, group[0]]
-      )[0] &&
-    groups.findIndex((g) =>
-      g.reduce(
-        (p, c) => group.findIndex((pt) => rcTermEquals(pt, c)) !== -1 && p,
-        true
-      )
-    ) === -1
-  );
-}
-
-function checkAdjExistsInGroups(groups, adj) {
-  return groups.reduce((p, c) => {
-    const finder = adj.length <= c.length ? adj : c;
-    const findee = adj.length <= c.length ? c : adj;
-    return (
-      finder.reduce(
-        (frp, frc) =>
-          findee.findIndex((fei) => rcTermEquals(frc, fei)) !== -1 && frp,
-        true
-      ) && p
-    );
-  }, true);
-  // return !groups.reduce((p, c) => {
-  //   const finder = adj.length <= c.length ? adj : c;
-  //   const findee = adj.length <= c.length ? c : adj;
-  //   return (
-  //     finder.findIndex(
-  //       (fri) => findee.findIndex((fei) => rcTermEquals(fri, fei)) !== -1
-  //     ) === -1 && p
-  //   );
-  // }, true);
 }
