@@ -19,12 +19,20 @@ const mapRowHeaderContainer = document.getElementById(
 );
 const outputExpression = document.getElementById("output-expression");
 
+const expressions = [
+  "2,3,5,7,8,10,12,13,15",
+  "0,1,2,5,6,7,8,9,10,14",
+  "2,6,8,9,10,11,14,15",
+  "4,8,10,11,12,15",
+];
 const isStateLoggingEnabled = true;
-var expression = "0,5,7,8,9,10,11,14,15";
+//var expression = "0,5,7,8,9,10,11,14,15";
+var expression = expressions[0];
 var variables = ["A", "B", "C", "D"];
 var groupsSets = [];
 var inputMinTerms = [];
 var map = [];
+var getReducedGroupSetImplicantStatesRunCount = 0;
 
 const variablesInputElement = document.getElementById("variables-input");
 const mintermsInputElement = document.getElementById("minterms-input");
@@ -40,7 +48,7 @@ function expressionInputOnKeyUp(event) {
 function getOutput() {
   if (expression === "") return;
   if (variables.length < 2) return;
-  inputMinTerms = expression.split(",");
+  inputMinTerms = expression.split(",").map((v) => Number(v));
   const binMinTermsCombinations = inputMinTerms.map((v) =>
     getBinary(v, variables.length)
   );
@@ -55,31 +63,294 @@ function getOutput() {
     []
   );
   const groupingBy1Count = getGroupingBy1Count(binMinTermsCombinations);
-  while (
-    groupsSets.length > 0
-      ? groupsSets[groupsSets.length - 1].length !== 0
-      : true
-  ) {
-    groupsSets.push(
-      getGroupingByAdj(
-        groupsSets.length > 0
-          ? groupsSets[groupsSets.length - 1]
-          : groupingBy1Count
-      )
-    );
-  }
+  groupsSets.push(groupingBy1Count);
+  while (groupsSets[groupsSets.length - 1].length !== 0)
+    groupsSets.push(getGroupingByAdj(groupsSets[groupsSets.length - 1]));
   groupsSets = groupsSets.slice(0, groupsSets.length - 1);
 
-  updatedGroupSets = [];
-  groupsSets
-    .slice(0, groupsSets.length - 1)
-    .forEach((groupSet, groupSetI) => {});
+  const compiledGroupSet = [...groupsSets[groupsSets.length - 1]];
+  for (let i = groupsSets.length - 2; i >= 0; i--) {
+    const groupSet = groupsSets[i];
+    const groupSetKeys = groupSet.map((group) => Object.keys(group));
+    const compiledGroupSetKeys = compiledGroupSet
+      .map((group) => Object.keys(group))
+      .reduce((p, c) => p + c.join(";"), "");
+
+    groupSetKeys.forEach((gks, gsi) => {
+      gks.forEach((gk) => {
+        if (!compiledGroupSetKeys.includes(gk)) {
+          compiledGroupSet.push({ [gk]: groupSet[gsi][gk] });
+        }
+      });
+    });
+  }
+
+  const uniqueGroupsSet = [];
+  for (let i = 0; i < compiledGroupSet.length; i++) {
+    const group = compiledGroupSet[i];
+    Object.keys(group).forEach((gk) => {
+      if (
+        uniqueGroupsSet.reduce(
+          (p, c) => Object.values(c)[0] !== group[gk] && p,
+          true
+        )
+      ) {
+        uniqueGroupsSet.push({ [gk]: group[gk] });
+      }
+    });
+  }
+  groupsSets.push(uniqueGroupsSet);
 
   console.log(groupsSets);
+
+  const groupSetMinTerms = [];
+  uniqueGroupsSet.forEach((g) => {
+    const groupItemKey = Object.keys(g)[0];
+    groupSetMinTerms.push({
+      [groupItemKey]: [
+        g[groupItemKey],
+        groupItemKey.split(",").map((b) => Number("0b" + b)),
+      ],
+    });
+  });
+  console.log(groupSetMinTerms);
+
+  const [groupSetImplicantStates, reducedGroupSetUnusedMinTerms] =
+    getReducedGroupSetImplicantStates(groupSetMinTerms, inputMinTerms);
+
+  // const reducedGroupSetImplicantStates = groupSetImplicantStates.filter(
+  //   (v) => Object.values(v)[0][3].length > 0
+  // );
+  // const reducedGroupSetUnusedMinTerms = inputMinTerms
+  //   .filter(
+  //     (i) =>
+  //       !Array.from(
+  //         new Set(
+  //           reducedGroupSetImplicantStates.reduce(
+  //             (p, c) => p.concat(Object.values(c)[0][1]),
+  //             []
+  //           )
+  //         )
+  //       ).includes(Number(i))
+  //   )
+  //   .map((n) => Number(n));
+  // console.log(reducedGroupSetUnusedMinTerms);
+
+  // if (reducedGroupSetUnusedMinTerms.length > 0) {
+  //   const currGroupSetMinTerms = groupSetImplicantStates
+  //     .filter((v) => Object.values(v)[0][3].length === 0)
+  //     .map((v) => {
+  //       return { [Object.keys(v)[0]]: Object.values(v)[0].slice(0, 2) };
+  //     });
+
+  //   let currReducedGroupSetImplicantsStates = [];
+  //   currGroupSetMinTerms.forEach((g) => {
+  //     const groupItemKey = Object.keys(g)[0];
+  //     const implicants = g[groupItemKey][1];
+  //     const implicantsCount = implicants.length;
+  //     const primeImplicants = [];
+  //     implicants.forEach((cImp) => {
+  //       const isImpPrime = reducedGroupSetUnusedMinTerms.includes(cImp);
+  //       if (isImpPrime) primeImplicants.push(cImp);
+  //     });
+  //     currReducedGroupSetImplicantsStates.push({
+  //       [groupItemKey]: [
+  //         g[groupItemKey][0],
+  //         implicants,
+  //         implicantsCount,
+  //         primeImplicants,
+  //       ],
+  //     });
+  //   });
+
+  //   currReducedGroupSetImplicantsStates = currReducedGroupSetImplicantsStates
+  //     .filter((v) => Object.values(v)[0][3].length > 0)
+  //     .sort(
+  //       (a, b) => Object.values(b)[0][3].length - Object.values(a)[0][3].length
+  //     );
+  //   let filteredCurrReducedGroupSetImplicantsStates = [];
+  //   const firstCRGSIS = currReducedGroupSetImplicantsStates[0];
+  //   filteredCurrReducedGroupSetImplicantsStates.push(firstCRGSIS);
+  //   filteredCurrReducedGroupSetImplicantsStates =
+  //     filteredCurrReducedGroupSetImplicantsStates.concat(
+  //       currReducedGroupSetImplicantsStates.filter(
+  //         (v) =>
+  //           !Object.values(v)[0][3].reduce(
+  //             (p, ci) => Object.values(firstCRGSIS)[0][3].includes(ci) && p,
+  //             true
+  //           )
+  //       )
+  //     );
+
+  //   const res = groupSetImplicantStates
+  //     .concat(filteredCurrReducedGroupSetImplicantsStates)
+  //     .map((v) =>
+  //       repFromExpression(expFromBinRep(Object.values(v)[0][0], variables))
+  //     );
+  //   console.log(res);
+  // } else {
+  const res = groupSetImplicantStates.map((v) =>
+    repFromExpression(expFromBinRep(Object.values(v)[0][0], variables))
+  );
+  console.log(res);
+}
+
+function tabulateGroupSet(gmt, title) {
+  let obj = {};
+  gmt.forEach((g) => {
+    obj[Object.keys(g)[0]] = g[Object.keys(g)[0]].map((v) => {
+      const o = `${v.toString()}${v[0] ? " " : ""}${
+        v[0] ? "arr-" + typeof v[0] : ""
+      }`;
+      return o !== "" ? o : [];
+    });
+  });
+  title ? console.log(title) : undefined;
+  console.table(obj);
+}
+
+function getReducedGroupSetImplicantStates(
+  groupSetMinTerms,
+  sourceMinTerms,
+  prevGroupSetImplicantStates
+) {
+  // if (getReducedGroupSetImplicantStatesRunCount > 2) return;
+  getReducedGroupSetImplicantStatesRunCount++;
+  console.log(
+    `getReducedGroupSetImplicantStates>>> ${getReducedGroupSetImplicantStatesRunCount} ------------------------`
+  );
+
+  const groupSetImplicantStates = [];
+  groupSetMinTerms.forEach((g) => {
+    const groupItemKey = Object.keys(g)[0];
+    const implicants = g[groupItemKey][1];
+    const implicantsCount = implicants.length;
+    const primeImplicants = [];
+    const implicantsInSource = [];
+    implicants.forEach((cImp) => {
+      if (!sourceMinTerms.includes(cImp)) return;
+      implicantsInSource.push(cImp);
+      const isImpPrime = groupSetMinTerms
+        .filter((v) => Object.keys(v)[0] !== groupItemKey)
+        .reduce((p, c) => !Object.values(c)[0][1].includes(cImp) && p, true);
+      if (isImpPrime) primeImplicants.push(cImp);
+    });
+    groupSetImplicantStates.push({
+      [groupItemKey]: [
+        g[groupItemKey][0],
+        implicants,
+        implicantsCount,
+        primeImplicants,
+        implicantsInSource,
+      ],
+    });
+  });
+  console.log(sourceMinTerms);
+  tabulateGroupSet(
+    groupSetImplicantStates,
+    `Group Set Implicant States ${getReducedGroupSetImplicantStatesRunCount}`
+  );
+
+  let reducedGroupSetImplicantStates = groupSetImplicantStates.filter(
+    (v) => Object.values(v)[0][3].length > 0
+  );
+
+  if (reducedGroupSetImplicantStates.length === 0)
+    reducedGroupSetImplicantStates = [];
+  let tempGroupSetImplicantStates = groupSetImplicantStates;
+  while (true) {
+    const currMinTerms = inputMinTerms
+      .filter(
+        (i) =>
+          !Array.from(
+            new Set(
+              reducedGroupSetImplicantStates.reduce(
+                (p, c) => p.concat(Object.values(c)[0][1]),
+                []
+              )
+            )
+          ).includes(i)
+      )
+      .map((n) => Number(n));
+    const groupSetWeightages = tempGroupSetImplicantStates
+      .map((v, i) => [
+        v,
+        i,
+        currMinTerms.reduce(
+          (p, c) => (Object.values(v)[0][4].includes(c) ? 1 : 0) + p,
+          0
+        ) / Object.values(v)[0][4].length,
+      ])
+      .filter((v) => v[2] > 0)
+      .sort((a, b) => a[2] - b[2]);
+    console.log(currMinTerms, groupSetWeightages);
+    if (groupSetWeightages.length > 0) {
+      const largestWeightage =
+        groupSetWeightages[groupSetWeightages.length - 1];
+      reducedGroupSetImplicantStates.push(largestWeightage[0]);
+      tempGroupSetImplicantStates = tempGroupSetImplicantStates.filter(
+        (_, i) => i !== largestWeightage[1]
+      );
+    } else break;
+  }
+
+  if (prevGroupSetImplicantStates)
+    reducedGroupSetImplicantStates = reducedGroupSetImplicantStates.concat(
+      prevGroupSetImplicantStates
+    );
+  tabulateGroupSet(
+    reducedGroupSetImplicantStates,
+    `Reduced Group Set Implicant States ${getReducedGroupSetImplicantStatesRunCount}`
+  );
+
+  const reducedGroupSetUnusedMinTerms = inputMinTerms
+    .filter(
+      (i) =>
+        !Array.from(
+          new Set(
+            reducedGroupSetImplicantStates.reduce(
+              (p, c) => p.concat(Object.values(c)[0][1]),
+              []
+            )
+          )
+        ).includes(i)
+    )
+    .map((n) => Number(n));
+  console.log(reducedGroupSetUnusedMinTerms);
+
+  if (reducedGroupSetUnusedMinTerms.length > 0) {
+    const currGroupSetMinTerms = groupSetImplicantStates
+      .filter((v) => Object.values(v)[0][3].length === 0)
+      .map((v) => {
+        return { [Object.keys(v)[0]]: Object.values(v)[0].slice(0, 2) };
+      });
+    tabulateGroupSet(
+      currGroupSetMinTerms,
+      `Curr Group Set Min Terms ${getReducedGroupSetImplicantStatesRunCount}`
+    );
+    const [nextGroupSetImplicantStates, nextReducedGroupSetUnusedMinTerms] =
+      getReducedGroupSetImplicantStates(
+        currGroupSetMinTerms,
+        reducedGroupSetUnusedMinTerms,
+        reducedGroupSetImplicantStates
+      );
+    tabulateGroupSet(
+      nextGroupSetImplicantStates,
+      `Next Group Set Implicant States ${getReducedGroupSetImplicantStatesRunCount}`
+    );
+    if (
+      nextGroupSetImplicantStates.reduce(
+        (p, c) => Object.values(c)[0][3].length > 0 || p,
+        false
+      )
+    )
+      return [nextGroupSetImplicantStates, reducedGroupSetUnusedMinTerms];
+  }
+  return [reducedGroupSetImplicantStates, reducedGroupSetUnusedMinTerms];
 }
 
 function getBinary(num, nBits) {
-  const bin = Number(num).toString(2);
+  const bin = num.toString(2);
   return "0".repeat(nBits - bin.length) + bin;
 }
 
@@ -89,7 +360,8 @@ function getGroupingBy1Count(binMinTermsCombinations) {
     let currGroup = {};
     binMinTermsCombinations.forEach((c) => {
       const matches = c.match(/1/g);
-      if (matches !== null && matches.length === countOf1) currGroup[c] = c;
+      if (matches !== null ? matches.length === countOf1 : countOf1 === 0)
+        currGroup[c] = c;
     });
     if (Object.values(currGroup).length > 0) groups.push(currGroup);
   }
@@ -271,6 +543,17 @@ function getCombinations(vars, currCombinations = { "": "" }) {
     }
   });
   return getCombinations(vars.slice(1), cc);
+}
+
+function expFromBinRep(bin, currVariables) {
+  let ret = "";
+  let lBin = bin.split("");
+  for (let i = 0; i < lBin.length; i++) {
+    const curr = lBin[i];
+    if (curr === "-") continue;
+    ret += variableFromValue(Number(curr), currVariables[i]);
+  }
+  return ret;
 }
 
 function variableFromValue(val, variable) {
