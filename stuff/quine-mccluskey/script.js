@@ -34,8 +34,8 @@ const expressions = [
 ];
 const isStateLoggingEnabled = true;
 //var expression = "0,5,7,8,9,10,11,14,15";
-var expression = "2,6,8,9,10,11,14,15";
-var variables = ["P", "Q", "R", "S"];
+var expression = expressions[0];
+var variables = ["A", "B", "C", "D"];
 var groupsSetsState = [];
 var inputMinTerms = [];
 var map = [];
@@ -246,12 +246,14 @@ function onGroupStateListItemClick(gss, index) {
   currGroupsStateValue.innerHTML = gss[index][1]
     .map(
       (v, i) =>
-        `<p class="font-semibold">Group ${i}: </p>` +
+        `<ul class="flex-none px-4 py-1 ml-2 mt-2 bg-amber-500/10">
+        <li class="font-semibold">Group ${i}: </li>` +
         Object.keys(v)
-          .map((k) => `&nbsp;&nbsp;${k}: ${v[k]}`)
-          .join(",<br/>")
+          .map((k) => `<li>${k}: ${v[k]}</li>`)
+          .join("") +
+        "</ul>"
     )
-    .join("<br/>");
+    .join("");
   mapCurrGroupStateTitle.textContent = currItem[0];
 }
 
