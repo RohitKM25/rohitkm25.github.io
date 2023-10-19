@@ -1,14 +1,15 @@
 const MAP_CONTAINER_CLASS = "grid w-fit";
 const MAP_CONTENT_CONTAINER_CLASS =
-  "col-start-2 row-start-2 grid w-fit divide-x divide-y divide-amber-500/40 border-t-2 border-l-2 border-amber-500 relative";
+  "col-start-2 row-start-2 grid w-fit divide-x divide-y divide-amber-500/40 border-t-2 border-l-2 border-amber-500 relative overflow-hidden";
 const MAP_COL_HEADER_CONTAINER_CLASS =
   "grid grid-rows-1 divide-x divide-transparent border-l-2 border-transparent";
 const MAP_ROW_HEADER_CONTAINER_CLASS =
   "row-start-2 col-start-1 grid grid-cols-1 divide-y divide-transparent border-t-2 border-transparent";
 const MAP_CONTENT_CELL_CONTAINER_CLASS =
-  "bg-amber-600/10 place-self-stretch relative h-16 w-16 flex items-center justify-center";
-const MAP_CONTENT_CELL_OUTPUT_CLASS = "text-lg";
-const MAP_CONTENT_CELL_TERM_CLASS = "text-sm absolute bottom-1 right-2";
+  "bg-amber-600/10 place-self-stretch relative h-12 w-12 md:h-16 md:w-16 flex items-center justify-center transition-all";
+const MAP_CONTENT_CELL_OUTPUT_CLASS = "text-base md:text-lg transition-all";
+const MAP_CONTENT_CELL_TERM_CLASS =
+  "text-xs md:text-sm absolute bottom-1 right-2 transition-all";
 
 const mapContentContainer = document.getElementById("map-content-container");
 const mapColHeaderContainer = document.getElementById(
@@ -31,13 +32,17 @@ const expressions = [
   "0,1,2,5,6,7,8,9,10,14",
   "2,6,8,9,10,11,14,15",
   "4,8,10,11,12,15",
+  "5,7,11,12,27,29",
 ];
+const dontcares = ["14,20,21,22,23"];
 const isStateLoggingEnabled = true;
 //var expression = "0,5,7,8,9,10,11,14,15";
-var expression = expressions[0];
-var variables = ["A", "B", "C", "D"];
+var expression = expressions[4];
+var dontcare = dontcares[0];
+var variables = ["A", "B", "C", "D", "E"];
 var groupsSetsState = [];
 var inputMinTerms = [];
+var dontCareMinTerms = [];
 var map = [];
 var getReducedGroupSetImplicantStatesRunCount = 0;
 
@@ -57,16 +62,28 @@ function getOutput() {
   if (expression === "") return;
   if (variables.length < 2) return;
   inputMinTerms = expression.split(",").map((v) => Number(v));
+  dontCareMinTerms = dontcare.split(",").map((v) => Number(v));
+  let totInputMinTerms = inputMinTerms.slice();
+  dontcare ? totInputMinTerms.push(...dontCareMinTerms) : undefined;
   groupsSetsState = [];
-  const binMinTermsCombinations = inputMinTerms.map((v) =>
+  const binMinTermsCombinations = totInputMinTerms.map((v) =>
     getBinary(v, variables.length)
   );
+  const binDontCareMinTermsCombinations = dontcare
+    ? dontCareMinTerms.map((v) => getBinary(v, variables.length))
+    : [];
   const minTermCombinations = getCombinations(variables);
   updateDisplay(
     variables,
     Object.keys(minTermCombinations)
       .filter(
         (k) => binMinTermsCombinations.findIndex((bmtc) => bmtc === k) !== -1
+      )
+      .map((k) => minTermCombinations[k]),
+    Object.keys(minTermCombinations)
+      .filter(
+        (k) =>
+          binDontCareMinTermsCombinations.findIndex((bmtc) => bmtc === k) !== -1
       )
       .map((k) => minTermCombinations[k]),
     []
@@ -180,7 +197,13 @@ function getReducedGroupSetImplicantStates(groupSetMinTerms, sourceMinTerms) {
       implicantsInSource.push(cImp);
       const isImpPrime = groupSetMinTerms
         .filter((v) => Object.keys(v)[0] !== groupItemKey)
-        .reduce((p, c) => !Object.values(c)[0][1].includes(cImp) && p, true);
+        .reduce(
+          (p, c) =>
+            (dontcare ? !dontCareMinTerms.includes(cImp) : true) &&
+            !Object.values(c)[0][1].includes(cImp) &&
+            p,
+          true
+        );
       if (isImpPrime) primeImplicants.push(cImp);
     });
     groupSetImplicantStates.push({
@@ -201,7 +224,6 @@ function getReducedGroupSetImplicantStates(groupSetMinTerms, sourceMinTerms) {
   if (reducedGroupSetImplicantStates.length === 0)
     reducedGroupSetImplicantStates = [];
   let tempGroupSetImplicantStates = groupSetImplicantStates;
-
   while (true) {
     const currMinTerms = inputMinTerms
       .filter(
@@ -227,7 +249,6 @@ function getReducedGroupSetImplicantStates(groupSetMinTerms, sourceMinTerms) {
       ])
       .filter((v) => v[2] > 0)
       .sort((a, b) => a[2] - b[2]);
-
     if (groupSetWeightages.length > 0) {
       const largestWeightage =
         groupSetWeightages[groupSetWeightages.length - 1];
@@ -343,7 +364,28 @@ function getMinTerms(expression, currVariables) {
   return currInputMinTerms;
 }
 
-function updateDisplay(currVariables, currInputMinTerms, currAdjacents) {
+function updateDisplay(
+  currVariables,
+  currInputMinTerms,
+  currDontCareMinTerms,
+  currAdjacents
+) {
+  // currAdjacents = [
+  //   [
+  //     [0, 2],
+  //     [0, 3],
+  //   ],
+  //   [
+  //     [1, 1],
+  //     [2, 2],
+  //   ],
+  //   [
+  //     [2, 0],
+  //     [3, 0],
+  //   ],
+  //   [[0, 3]],
+  //   [[3, 3]],
+  // ];
   const mapColCount = Math.pow(2, Math.ceil(currVariables.length / 2));
   const mapRowCount = Math.pow(2, Math.floor(currVariables.length / 2));
 
@@ -394,11 +436,12 @@ function updateDisplay(currVariables, currInputMinTerms, currAdjacents) {
 
       const currOut = document.createElement("output");
       currOut.className = MAP_CONTENT_CELL_OUTPUT_CLASS;
-      currOut.value = combinationExists(
-        rowCombinations[rowGreyCode] + colCombinations[colGreyCode],
-        currInputMinTerms
-      )
-        ? "1"
+      const currCombination =
+        rowCombinations[rowGreyCode] + colCombinations[colGreyCode];
+      currOut.value = currInputMinTerms.includes(currCombination)
+        ? currDontCareMinTerms.includes(currCombination)
+          ? "X"
+          : "1"
         : "0";
 
       const currTerm = document.createElement("output");
@@ -438,7 +481,8 @@ function updateDisplay(currVariables, currInputMinTerms, currAdjacents) {
     )}rem] h-[${Math.abs(
       (rowDist === 0 ? a.length : rowDist === a.length - 1 ? 1 : rowDist) * 4 -
         0.5
-    )}rem] m-1 rounded z-20 !border-2 !border-emerald-500`;
+    )}rem] m-1 rounded -z-10 !bg-green-800/70 !border-2 !border-emerald-500`;
+
     mapContentContainer.appendChild(marker);
   });
 }
@@ -453,7 +497,7 @@ function appendMapHeaderContainerChild(colComb, container) {
   const currExp = document.createElement("p");
   const currValue = document.createElement("p");
   curr.className =
-    "place-self-stretch relative h-16 w-16 flex flex-col items-center justify-end pb-2";
+    "place-self-stretch relative h-12 w-12 md:h-16 md:w-16 flex flex-col items-center justify-end pb-2";
   currExp.className = "text-sm";
   currExp.textContent = repFromExpression(colComb);
   currValue.className = "text-xs";

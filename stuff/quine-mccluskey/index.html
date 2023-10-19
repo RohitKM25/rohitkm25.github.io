@@ -32,6 +32,23 @@
                </div>
                <div class=" border-l-2 border-fuchsia-700 pl-2">
                     <label class="text-lg space-y-2">
+                         <p class="shadate-2 text-lg">Don't Cares</p>
+                         <div class="flex items-stretch space-x-2">
+                              <div
+                                   class="flex bg-fuchsia-900 w-full lg:w-[400px] w-full px-2 py-1 space-x-2 items-center">
+                                   <p class="bg-fuchsia-900 py-1 text-xl">&sum;
+                                   </p>
+                                   <p class="bg-fuchsia-900 py-1">(
+                                   </p><input class="bg-transparent flex-grow  focus:outline-amber-700 h-full"
+                                        id="minterms-input">
+                                   <p class="bg-fuchsia-900 py-1">)
+                                   </p>
+                              </div>
+                         </div>
+                    </label>
+               </div>
+               <div class=" border-l-2 border-fuchsia-700 pl-2">
+                    <label class="text-lg space-y-2">
                          <p class="shadate-2 text-lg">Enter Minterms</p>
                          <div class="flex items-stretch space-x-2">
                               <div class="flex bg-fuchsia-900 w-full lg:w-[400px] px-2 py-1 space-x-2 items-center">
@@ -42,11 +59,12 @@
                                         id="minterms-input">
                                    <p class="bg-fuchsia-900 py-1">)
                                    </p>
-                              </div><button class="bg-amber-500/10 px-3 hover:bg-amber-500/30"
-                                   onclick="executeButtonOnClick();">Execute</button>
+                              </div>
                          </div>
                     </label>
-               </div>
+               </div><button
+                    class="bg-amber-500/10 px-3 hover:bg-amber-500/30 h-10 w-full lg:w-[100px] border-2 border-amber-600/20 hover:border-amber-600"
+                    onclick="executeButtonOnClick();">Execute</button>
           </div>
           <div class="flex flex-col space-y-2 md:grid grid-cols-2">
                <div class="flex flex-col space-y-2 px-2">
@@ -54,11 +72,13 @@
                          <p>Map:&ThinSpace;</p><span id="map-curr-groups-state-title" class="text-base"></span>
                     </div>
                     <div id="map-container">
-                         <div class="place-self-stretch relative h-16 w-16">
-                              <output id="map-row-term" class="text-sm absolute bottom-1 left-2">A</output>
-                              <output id="map-col-term" class="text-sm absolute top-1 right-2">B</output>
+                         <div class="place-self-stretch relative h-12 w-12 md:h-16 md:w-16 transition-all">
+                              <output id="map-row-term"
+                                   class="text-sm absolute bottom-0.5 left-1 md:bottom-1 md:left-2 transition-all">A</output>
+                              <output id="map-col-term"
+                                   class="text-sm absolute top-0.5 right-1 md:top-1 md:right-2 transition-all">B</output>
                               <div
-                                   class="w-[5.8rem] h-16 absolute rotate-45 top-[1.44rem] -left-9 border-t border-amber-500">
+                                   class="w-[3.8rem] h-12 md:w-[5.8rem] md:h-16 absolute rotate-45 top-[1.44rem] -left-[1.05rem] md:top-[1.44rem] md:-left-9 border-t border-amber-500 transition-all">
                               </div>
                          </div>
                          <div id="map-col-header-container">
