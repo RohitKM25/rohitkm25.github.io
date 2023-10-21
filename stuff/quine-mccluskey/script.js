@@ -1,12 +1,12 @@
-const MAP_CONTAINER_CLASS = "grid w-fit";
+const MAP_CONTAINER_CLASS = "grid";
 const MAP_CONTENT_CONTAINER_CLASS =
-  "col-start-2 row-start-2 grid w-fit divide-x divide-y divide-amber-500/40 border-t-2 border-l-2 border-amber-500 relative overflow-hidden";
+  "col-start-2 row-start-2 grid w-fit border-l border-t border-transparent relative";
 const MAP_COL_HEADER_CONTAINER_CLASS =
-  "grid grid-rows-1 divide-x divide-transparent border-l-2 border-transparent";
+  "grid grid-rows-1 divide-x divide-amber-500/40 border-l-2 border-b-2 border-amber-600 sticky top-0 bg-fuchsia-950 z-10";
 const MAP_ROW_HEADER_CONTAINER_CLASS =
-  "row-start-2 col-start-1 grid grid-cols-1 divide-y divide-transparent border-t-2 border-transparent";
+  "row-start-2 col-start-1 grid grid-cols-1 divide-y divide-amber-500/40 border-t-2 border-r-2 border-amber-600 sticky left-0 bg-fuchsia-950 z-10";
 const MAP_CONTENT_CELL_CONTAINER_CLASS =
-  "bg-amber-600/10 place-self-stretch relative h-12 w-12 md:h-16 md:w-16 flex items-center justify-center transition-all";
+  "bg-amber-600/10 place-self-stretch relative h-14 w-14 md:h-16 md:w-16 flex items-center justify-center transition-all border-t border-l border-amber-500/40";
 const MAP_CONTENT_CELL_OUTPUT_CLASS = "text-base md:text-lg transition-all";
 const MAP_CONTENT_CELL_TERM_CLASS =
   "text-xs md:text-sm absolute bottom-1 right-2 transition-all";
@@ -39,7 +39,7 @@ const isStateLoggingEnabled = true;
 //var expression = "0,5,7,8,9,10,11,14,15";
 var expression = expressions[4];
 var dontcare = dontcares[0];
-var variables = ["A", "B", "C", "D", "E"];
+var variables = ["A", "B", "C", "D", "E", "F", "G", "H"];
 var groupsSetsState = [];
 var inputMinTerms = [];
 var dontCareMinTerms = [];
@@ -48,12 +48,14 @@ var getReducedGroupSetImplicantStatesRunCount = 0;
 
 const variablesInputElement = document.getElementById("variables-input");
 const mintermsInputElement = document.getElementById("minterms-input");
+const dontcaresInputElement = document.getElementById("dontcares-input");
 
 getOutput();
 
 function executeButtonOnClick() {
   if (mintermsInputElement.value === "" || variablesInputElement === "") return;
   expression = mintermsInputElement.value;
+  dontcare = dontcaresInputElement.value;
   variables = variablesInputElement.value.split(",");
   getOutput();
 }
@@ -66,6 +68,7 @@ function getOutput() {
   let totInputMinTerms = inputMinTerms.slice();
   dontcare ? totInputMinTerms.push(...dontCareMinTerms) : undefined;
   groupsSetsState = [];
+  console.log(totInputMinTerms);
   const binMinTermsCombinations = totInputMinTerms.map((v) =>
     getBinary(v, variables.length)
   );
@@ -292,6 +295,7 @@ function showGroupsSetsStateOutput(gss) {
 }
 
 function getBinary(num, nBits) {
+  console.log(num, nBits);
   const bin = num.toString(2);
   return "0".repeat(nBits - bin.length) + bin;
 }
@@ -409,21 +413,21 @@ function updateDisplay(
     "map-container"
   ).className = `${MAP_CONTAINER_CLASS} grid-cols-${
     mapColCount + 1
-  } grid-rows-${mapRowCount + 1}`;
+  } grid-rows-${mapRowCount + 1} overflow-x-auto max-w-[90vw]`;
 
   refreshContainer(
     mapContentContainer,
-    `${MAP_CONTENT_CONTAINER_CLASS} col-span-${mapColCount} row-span-${mapRowCount} grid-cols-${mapColCount} grid-rows-${mapRowCount}`
+    `${MAP_CONTENT_CONTAINER_CLASS} col-span-${mapColCount} row-span-${mapRowCount} grid-cols-[repeat(${mapColCount},1fr)] grid-rows-[repeat(${mapRowCount},1fr)]`
   );
 
   refreshContainer(
     mapColHeaderContainer,
-    `${MAP_COL_HEADER_CONTAINER_CLASS} col-span-${mapColCount} grid-cols-${mapColCount}`
+    `${MAP_COL_HEADER_CONTAINER_CLASS} col-span-${mapColCount} grid-cols-[repeat(${mapColCount},1fr)]`
   );
 
   refreshContainer(
     mapRowHeaderContainer,
-    `${MAP_ROW_HEADER_CONTAINER_CLASS} row-span-${mapRowCount} grid-rows-${mapRowCount}`
+    `${MAP_ROW_HEADER_CONTAINER_CLASS} row-span-${mapRowCount} grid-rows-[repeat(${mapRowCount},1fr)]`
   );
 
   for (let i = 0; i < mapRowCount; i++) {
@@ -497,10 +501,10 @@ function appendMapHeaderContainerChild(colComb, container) {
   const currExp = document.createElement("p");
   const currValue = document.createElement("p");
   curr.className =
-    "place-self-stretch relative h-12 w-12 md:h-16 md:w-16 flex flex-col items-center justify-end pb-2";
-  currExp.className = "text-sm";
+    "place-self-stretch relative h-14 w-14 md:h-16 md:w-16 flex flex-col items-center justify-end pb-2";
+  currExp.className = "text-xs md:text-sm";
   currExp.textContent = repFromExpression(colComb);
-  currValue.className = "text-xs";
+  currValue.className = "text-[0.50rem] md:text-xs";
   currValue.textContent = valueFromExpression(colComb);
   curr.append(currExp, currValue);
   container.appendChild(curr);

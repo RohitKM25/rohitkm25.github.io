@@ -15,7 +15,7 @@
 </head>
 
 <body class="h-screen w-screen overflow-x-hidden bg-fuchsia-950 text-amber-50 selection:bg-amber-600">
-     <div class="flex-grow overflow-y-auto p-5 flex flex-col items-stretch">
+     <div class="flex-grow overflow-y-auto overflow-x-hidden p-5 flex flex-col items-stretch">
           <p class="text-3xl md:text-4xl shadate-4">
                Quine McCluskey
           </p>
@@ -25,7 +25,8 @@
                     <label class="text-lg space-y-2">
                          <p class="shadate-2 text-lg">Enter Variables</p>
                          <div class="flex items-stretch space-x-2">
-                              <input class="bg-fuchsia-900 focus:outline-amber-700 py-1 w-full lg:w-[400px] px-2"
+                              <input
+                                   class="bg-fuchsia-900 focus:outline-amber-700 py-1 w-full lg:min-w-[400px] lg:max-w-[800px] px-2"
                                    id="variables-input">
                          </div>
                     </label>
@@ -35,12 +36,12 @@
                          <p class="shadate-2 text-lg">Don't Cares</p>
                          <div class="flex items-stretch space-x-2">
                               <div
-                                   class="flex bg-fuchsia-900 w-full lg:w-[400px] w-full px-2 py-1 space-x-2 items-center">
+                                   class="flex bg-fuchsia-900 w-full lg:min-w-[400px] lg:max-w-[800px] w-full px-2 py-1 space-x-2 items-center">
                                    <p class="bg-fuchsia-900 py-1 text-xl">&sum;
                                    </p>
                                    <p class="bg-fuchsia-900 py-1">(
                                    </p><input class="bg-transparent flex-grow  focus:outline-amber-700 h-full"
-                                        id="minterms-input">
+                                        id="dontcares-input">
                                    <p class="bg-fuchsia-900 py-1">)
                                    </p>
                               </div>
@@ -51,7 +52,8 @@
                     <label class="text-lg space-y-2">
                          <p class="shadate-2 text-lg">Enter Minterms</p>
                          <div class="flex items-stretch space-x-2">
-                              <div class="flex bg-fuchsia-900 w-full lg:w-[400px] px-2 py-1 space-x-2 items-center">
+                              <div
+                                   class="flex bg-fuchsia-900 w-full lg:min-w-[400px] lg:max-w-[800px] px-2 py-1 space-x-2 items-center">
                                    <p class="bg-fuchsia-900 py-1 text-xl">&sum;
                                    </p>
                                    <p class="bg-fuchsia-900 py-1">(
@@ -66,35 +68,37 @@
                     class="bg-amber-500/10 px-3 hover:bg-amber-500/30 h-10 w-full lg:w-[100px] border-2 border-amber-600/20 hover:border-amber-600"
                     onclick="executeButtonOnClick();">Execute</button>
           </div>
-          <div class="flex flex-col space-y-2 md:grid grid-cols-2">
-               <div class="flex flex-col space-y-2 px-2">
-                    <div class="shadate-2 text-xl flex items-center">
-                         <p>Map:&ThinSpace;</p><span id="map-curr-groups-state-title" class="text-base"></span>
-                    </div>
-                    <div id="map-container">
-                         <div class="place-self-stretch relative h-12 w-12 md:h-16 md:w-16 transition-all">
-                              <output id="map-row-term"
-                                   class="text-sm absolute bottom-0.5 left-1 md:bottom-1 md:left-2 transition-all">A</output>
-                              <output id="map-col-term"
-                                   class="text-sm absolute top-0.5 right-1 md:top-1 md:right-2 transition-all">B</output>
-                              <div
-                                   class="w-[3.8rem] h-12 md:w-[5.8rem] md:h-16 absolute rotate-45 top-[1.44rem] -left-[1.05rem] md:top-[1.44rem] md:-left-9 border-t border-amber-500 transition-all">
+          <div class="flex flex-col space-y-2">
+               <div class="flex flex-wrap gap-5">
+                    <div class="flex flex-col space-y-2 px-2">
+                         <div class="shadate-2 text-xl flex items-center">
+                              <p>Map:&ThinSpace;</p><span id="map-curr-groups-state-title" class="text-base"></span>
+                         </div>
+                         <div id="map-container">
+                              <div class="place-self-stretch relative h-14 w-14 md:h-16 md:w-16 transition-all">
+                                   <output id="map-row-term"
+                                        class="text-xs md:text-sm absolute bottom-0.5 left-1 md:bottom-1 md:left-2 transition-all">A</output>
+                                   <output id="map-col-term"
+                                        class="text-xs md:text-sm absolute top-0.5 right-1 md:top-1 md:right-2 transition-all">B</output>
+                                   <div
+                                        class="w-[3.8rem] h-14 md:w-[5.8rem] md:h-16 absolute rotate-45 top-[1.44rem] -left-[1.05rem] md:top-[1.44rem] md:-left-9 border-t border-amber-500 transition-all">
+                                   </div>
+                              </div>
+                              <div id="map-col-header-container">
+                              </div>
+                              <div id="map-row-header-container">
+                              </div>
+                              <div id="map-content-container">
                               </div>
                          </div>
-                         <div id="map-col-header-container">
-                         </div>
-                         <div id="map-row-header-container">
-                         </div>
-                         <div id="map-content-container">
-                         </div>
                     </div>
-               </div>
-               <div class="flex flex-col space-y-2">
-                    <p class="shadate-2 text-xl">Group States</p>
-                    <ul class="flex flex-col" id="groups-states-selection-list">
-                    </ul>
-                    <div id="curr-groups-state-value" class="text-sm flex flex-wrap">
+                    <div class="flex flex-col space-y-2">
+                         <p class="shadate-2 text-xl">Group States</p>
+                         <ul class="flex flex-col" id="groups-states-selection-list">
+                         </ul>
+                         <div id="curr-groups-state-value" class="text-sm flex flex-wrap">
 
+                         </div>
                     </div>
                </div>
                <div class="flex flex-col space-y-2 pt-5 col-span-2">
