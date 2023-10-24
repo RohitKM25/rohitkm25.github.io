@@ -11,6 +11,9 @@ const MAP_CONTENT_CELL_OUTPUT_CLASS = "text-base md:text-lg transition-all";
 const MAP_CONTENT_CELL_TERM_CLASS =
   "text-xs md:text-sm absolute bottom-1 right-2 transition-all";
 
+const mapOutput = document.getElementById("output-map");
+const mapContainer = document.getElementById("map-container");
+
 const mapContentContainer = document.getElementById("map-content-container");
 const mapColHeaderContainer = document.getElementById(
   "map-col-header-container"
@@ -24,6 +27,7 @@ const mapCurrGroupStateTitle = document.getElementById(
 const groupStatesSelectionList = document.getElementById(
   "groups-states-selection-list"
 );
+const outputGroups = document.getElementById("output-groups");
 const currGroupsStateValue = document.getElementById("curr-groups-state-value");
 const outputExpression = document.getElementById("output-expression");
 
@@ -37,9 +41,9 @@ const expressions = [
 const dontcares = ["14,20,21,22,23"];
 const isStateLoggingEnabled = true;
 //var expression = "0,5,7,8,9,10,11,14,15";
-var expression = expressions[4];
+var expression = expressions[0];
 var dontcare = dontcares[0];
-var variables = ["A", "B", "C", "D", "E", "F", "G", "H"];
+var variables = ["A", "B", "C", "D", "E"];
 var groupsSetsState = [];
 var inputMinTerms = [];
 var dontCareMinTerms = [];
@@ -50,6 +54,9 @@ const variablesInputElement = document.getElementById("variables-input");
 const mintermsInputElement = document.getElementById("minterms-input");
 const dontcaresInputElement = document.getElementById("dontcares-input");
 
+mintermsInputElement.value = expression;
+dontcaresInputElement.value = dontcare;
+variablesInputElement.value = variables.join(",");
 getOutput();
 
 function executeButtonOnClick() {
@@ -68,7 +75,6 @@ function getOutput() {
   let totInputMinTerms = inputMinTerms.slice();
   dontcare ? totInputMinTerms.push(...dontCareMinTerms) : undefined;
   groupsSetsState = [];
-  console.log(totInputMinTerms);
   const binMinTermsCombinations = totInputMinTerms.map((v) =>
     getBinary(v, variables.length)
   );
@@ -76,37 +82,30 @@ function getOutput() {
     ? dontCareMinTerms.map((v) => getBinary(v, variables.length))
     : [];
   const minTermCombinations = getCombinations(variables);
-  updateDisplay(
-    variables,
-    Object.keys(minTermCombinations)
-      .filter(
-        (k) => binMinTermsCombinations.findIndex((bmtc) => bmtc === k) !== -1
-      )
-      .map((k) => minTermCombinations[k]),
-    Object.keys(minTermCombinations)
-      .filter(
-        (k) =>
-          binDontCareMinTermsCombinations.findIndex((bmtc) => bmtc === k) !== -1
-      )
-      .map((k) => minTermCombinations[k]),
-    []
-  );
+  if (variables.length < 5)
+    updateDisplay(
+      variables,
+      Object.keys(minTermCombinations)
+        .filter(
+          (k) => binMinTermsCombinations.findIndex((bmtc) => bmtc === k) !== -1
+        )
+        .map((k) => minTermCombinations[k]),
+      Object.keys(minTermCombinations)
+        .filter(
+          (k) =>
+            binDontCareMinTermsCombinations.findIndex((bmtc) => bmtc === k) !==
+            -1
+        )
+        .map((k) => minTermCombinations[k]),
+      []
+    );
   const groupingBy1Count = getGroupingBy1Count(binMinTermsCombinations);
   let groupsSets = [groupingBy1Count];
+  //groupsSetsState.push(["Grouping by Count of One", groupingBy1Count]);
 
-  groupsSetsState.push(["Grouping by Count of One", groupingBy1Count]);
+  while (groupsSets[groupsSets.length - 1].length !== 0)
+    groupsSets.push(getGroupingByAdj(groupsSets[groupsSets.length - 1]));
 
-  let gbaCount = 1;
-  while (groupsSets[groupsSets.length - 1].length !== 0) {
-    const currGrouping = getGroupingByAdj(groupsSets[groupsSets.length - 1]);
-    groupsSets.push(currGrouping);
-    if (currGrouping.length !== 0)
-      groupsSetsState.push([
-        `Grouping by Adjacents: ${gbaCount}`,
-        currGrouping,
-      ]);
-    gbaCount++;
-  }
   groupsSets = groupsSets.slice(0, groupsSets.length - 1);
 
   const compiledGroupSet = [...groupsSets[groupsSets.length - 1]];
@@ -126,6 +125,8 @@ function getOutput() {
     });
   }
 
+  showGroupingGridsFromGroupsSet(groupsSets, compiledGroupSet);
+
   groupsSetsState.push(["Compiled Groups", compiledGroupSet]);
 
   const uniqueGroupsSet = [];
@@ -142,8 +143,6 @@ function getOutput() {
       }
     });
   }
-
-  groupsSetsState.push(["Unique Groups", uniqueGroupsSet]);
 
   const groupSetMinTerms = [];
   uniqueGroupsSet.forEach((g) => {
@@ -165,12 +164,68 @@ function getOutput() {
     "Reduced Groups",
     getGroupSetFromImplicantStates(groupSetImplicantStates),
   ]);
-  showGroupsSetsStateOutput(groupsSetsState);
 
   const res = groupSetImplicantStates.map((v) =>
     repFromExpression(expFromBinRep(Object.values(v)[0][0], variables))
   );
   outputExpression.value = res.join(" + ");
+}
+
+function showGroupingGridsFromGroupsSet(groupsSets, compiledGroupSets) {
+  const compiledGroups = compiledGroupSets
+    .map((groupSet) => Object.keys(groupSet))
+    .reduce((p, c) => [...p, ...c], []);
+  outputGroups.innerHTML = "";
+  groupsSets.forEach((groupsSet, gsi) => {
+    const currAdjacentGroupsContainer = document.createElement("div");
+
+    const currAdjacentGroupsTitle = document.createElement("p");
+    currAdjacentGroupsTitle.innerText = `Grouping ${gsi}`;
+    currAdjacentGroupsTitle.className = "text-lg font-bold";
+
+    const currAdjacentGroups = document.createElement("div");
+    currAdjacentGroups.className = `w-full md:w-fit grid grid-cols-3 grid-rows-[repeat(${groupsSet.length},1fr)] m-2 border border-amber-600`;
+    currAdjacentGroups.innerHTML = groupsSet
+      .map(
+        (v, i) =>
+          `<div class="p-2 md:w-[250px] flex flex-col items-center justify-center text-base font-semibold ${
+            i > 0 ? "border-t" : ""
+          } border-amber-600/70"><p class="text-center">${
+            gsi === 0
+              ? `Grouping by ${Object.values(v)[0].split("1").length - 1} ones`
+              : `Group ${i}->${i + 1}`
+          }</p></div><div class="border-l ${
+            i > 0 ? "border-t" : ""
+          } border-amber-600/70 px-8 py-2 col-span-2 flex flex-col items-start justify-center">` +
+          Object.keys(v)
+            .map(
+              (k) =>
+                `<p class="${
+                  compiledGroups.includes(k)
+                    ? "underline underline-offset-4"
+                    : ""
+                }">${(k.includes(",")
+                  ? k.split(",").map((ki) => Number("0b" + ki))
+                  : [Number("0b" + k)]
+                )
+                  .map(
+                    (ki) =>
+                      `<span class="${
+                        dontCareMinTerms.includes(ki) ? "text-amber-50/60" : ""
+                      }">m<sub>${ki}</sub></span>`
+                  )
+                  .join("-")}: ${v[k]}</p>`
+            )
+            .join("") +
+          "</div>"
+      )
+      .join("");
+
+    currAdjacentGroupsContainer.appendChild(currAdjacentGroupsTitle);
+    currAdjacentGroupsContainer.appendChild(currAdjacentGroups);
+
+    outputGroups.appendChild(currAdjacentGroupsContainer);
+  });
 }
 
 function tabulateGroupSet(gmt, title) {
@@ -219,6 +274,7 @@ function getReducedGroupSetImplicantStates(groupSetMinTerms, sourceMinTerms) {
       ],
     });
   });
+  console.log(groupSetImplicantStates);
 
   let reducedGroupSetImplicantStates = groupSetImplicantStates.filter(
     (v) => Object.values(v)[0][3].length > 0
@@ -265,37 +321,7 @@ function getReducedGroupSetImplicantStates(groupSetMinTerms, sourceMinTerms) {
   return reducedGroupSetImplicantStates;
 }
 
-function onGroupStateListItemClick(gss, index) {
-  const currItem = gss[index];
-  currGroupsStateValue.innerHTML = gss[index][1]
-    .map(
-      (v, i) =>
-        `<ul class="flex-none px-4 py-1 ml-2 mt-2 bg-amber-500/10">
-        <li class="font-semibold">Group ${i}: </li>` +
-        Object.keys(v)
-          .map((k) => `<li>${k}: ${v[k]}</li>`)
-          .join("") +
-        "</ul>"
-    )
-    .join("");
-  mapCurrGroupStateTitle.textContent = currItem[0];
-}
-
-function showGroupsSetsStateOutput(gss) {
-  groupStatesSelectionList.innerHTML = "";
-  onGroupStateListItemClick(gss, 0);
-  gss.forEach((v, i) => {
-    const li = document.createElement("li");
-    li.className =
-      "px-3 py-0.5 select-none border-l-2 border-amber-500/10 hover:border-amber-600 hover:bg-amber-500/10";
-    li.textContent = v[0];
-    li.onclick = () => onGroupStateListItemClick(gss, i);
-    groupStatesSelectionList.appendChild(li);
-  });
-}
-
 function getBinary(num, nBits) {
-  console.log(num, nBits);
   const bin = num.toString(2);
   return "0".repeat(nBits - bin.length) + bin;
 }
@@ -374,22 +400,6 @@ function updateDisplay(
   currDontCareMinTerms,
   currAdjacents
 ) {
-  // currAdjacents = [
-  //   [
-  //     [0, 2],
-  //     [0, 3],
-  //   ],
-  //   [
-  //     [1, 1],
-  //     [2, 2],
-  //   ],
-  //   [
-  //     [2, 0],
-  //     [3, 0],
-  //   ],
-  //   [[0, 3]],
-  //   [[3, 3]],
-  // ];
   const mapColCount = Math.pow(2, Math.ceil(currVariables.length / 2));
   const mapRowCount = Math.pow(2, Math.floor(currVariables.length / 2));
 
@@ -409,9 +419,7 @@ function updateDisplay(
     colVars.join("")
   );
 
-  document.getElementById(
-    "map-container"
-  ).className = `${MAP_CONTAINER_CLASS} grid-cols-${
+  mapContainer.className = `${MAP_CONTAINER_CLASS} grid-cols-${
     mapColCount + 1
   } grid-rows-${mapRowCount + 1} overflow-x-auto max-w-[90vw]`;
 
@@ -489,6 +497,8 @@ function updateDisplay(
 
     mapContentContainer.appendChild(marker);
   });
+
+  mapOutput.classList.remove("hidden");
 }
 
 function refreshContainer(container, containerClass) {
