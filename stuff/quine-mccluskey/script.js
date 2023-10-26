@@ -28,6 +28,14 @@ const groupStatesSelectionList = document.getElementById(
   "groups-states-selection-list"
 );
 const outputGroups = document.getElementById("output-groups");
+const outputGroupsCheckbox = document.getElementById("output-groups-collapsed");
+
+const outputReductions = document.getElementById("output-reductions");
+
+const outputReductionsCheckbox = document.getElementById(
+  "output-reductions-collapsed"
+);
+
 const currGroupsStateValue = document.getElementById("curr-groups-state-value");
 const outputExpression = document.getElementById("output-expression");
 
@@ -41,7 +49,7 @@ const expressions = [
 const dontcares = ["14,20,21,22,23"];
 const isStateLoggingEnabled = true;
 //var expression = "0,5,7,8,9,10,11,14,15";
-var expression = expressions[0];
+var expression = expressions[1];
 var dontcare = dontcares[0];
 var variables = ["A", "B", "C", "D", "E"];
 var groupsSetsState = [];
@@ -49,6 +57,8 @@ var inputMinTerms = [];
 var dontCareMinTerms = [];
 var map = [];
 var getReducedGroupSetImplicantStatesRunCount = 0;
+outputGroupsCheckbox.checked = false;
+outputReductionsCheckbox.checked = false;
 
 const variablesInputElement = document.getElementById("variables-input");
 const mintermsInputElement = document.getElementById("minterms-input");
@@ -274,7 +284,11 @@ function getReducedGroupSetImplicantStates(groupSetMinTerms, sourceMinTerms) {
       ],
     });
   });
-  console.log(groupSetImplicantStates);
+
+  getReductionGridElementFromImplicantStates(
+    groupSetImplicantStates,
+    sourceMinTerms
+  );
 
   let reducedGroupSetImplicantStates = groupSetImplicantStates.filter(
     (v) => Object.values(v)[0][3].length > 0
@@ -297,6 +311,11 @@ function getReducedGroupSetImplicantStates(groupSetMinTerms, sourceMinTerms) {
           ).includes(i)
       )
       .map((n) => Number(n));
+
+    getReductionGridElementFromImplicantStates(
+      tempGroupSetImplicantStates,
+      currMinTerms
+    );
     const groupSetWeightages = tempGroupSetImplicantStates
       .map((v, i) => [
         v,
@@ -305,9 +324,11 @@ function getReducedGroupSetImplicantStates(groupSetMinTerms, sourceMinTerms) {
           (p, c) => (Object.values(v)[0][4].includes(c) ? 1 : 0) + p,
           0
         ) / Object.values(v)[0][4].length,
+        Object.values(v)[0][4].length,
       ])
       .filter((v) => v[2] > 0)
-      .sort((a, b) => a[2] - b[2]);
+      .sort((a, b) => a[2] - b[2])
+      .sort((a, b) => a[3] - b[3]);
     if (groupSetWeightages.length > 0) {
       const largestWeightage =
         groupSetWeightages[groupSetWeightages.length - 1];
@@ -319,6 +340,98 @@ function getReducedGroupSetImplicantStates(groupSetMinTerms, sourceMinTerms) {
   }
 
   return reducedGroupSetImplicantStates;
+}
+
+function getReductionGridElementFromImplicantStates(implicantStates, minTerms) {
+  implicantStates = implicantStates.filter((v) =>
+    Object.values(v)[0][1].reduce((p, c) => p || minTerms.includes(c), false)
+  );
+
+  if (implicantStates.length === 0) return;
+
+  const grid = document.createElement("div");
+  grid.className =
+    "w-fit flex border border-amber-600 text-lg flex-none w-fit overflow-x-auto";
+
+  const groupColumn = document.createElement("div");
+  groupColumn.className = `grid grid-cols-1 divide-y divide-amber-600/70 border-r border-amber-600/70 flex-none bg-fuchsia-950`;
+  const groupColumnTitle = document.createElement("div");
+
+  groupColumnTitle.className = "border-b border-amber-600/70 px-2";
+  groupColumnTitle.innerHTML = "<p>Groups</p>";
+  groupColumn.appendChild(groupColumnTitle);
+
+  implicantStates.forEach((iState) => {
+    const key = Object.keys(iState)[0];
+    const groupColumnItem = document.createElement("div");
+    groupColumnItem.className = "px-2";
+    groupColumnItem.innerHTML = `<p>${(key.includes(",")
+      ? key.split(",").map((ki) => Number("0b" + ki))
+      : [Number("0b" + key)]
+    )
+      .map(
+        (ki) =>
+          `<span class="${
+            dontCareMinTerms.includes(ki) ? "text-amber-50/60" : ""
+          }">m<sub>${ki}</sub></span>`
+      )
+      .join(",")}</p>`;
+    groupColumn.appendChild(groupColumnItem);
+  });
+
+  grid.appendChild(groupColumn);
+
+  const expressionColumn = document.createElement("div");
+  expressionColumn.className = `grid grid-cols-1 divide-y divide-amber-600/70 border-r border-amber-600/70 flex-none bg-fuchsia-950 sticky left-0`;
+  const expressionColumnTitle = document.createElement("div");
+
+  expressionColumnTitle.className = "border-b border-amber-600/70 px-2";
+  expressionColumnTitle.innerHTML = "<p>Expression</p>";
+  expressionColumn.appendChild(expressionColumnTitle);
+
+  implicantStates.forEach((iState) => {
+    const binInStates = Object.values(iState)[0][0];
+    const expressionColumnItem = document.createElement("div");
+    expressionColumnItem.className = "px-2";
+    expressionColumnItem.innerHTML = `<p>${repFromExpression(
+      expFromBinRep(binInStates, variables)
+    )}</p>`;
+    expressionColumn.appendChild(expressionColumnItem);
+  });
+
+  grid.appendChild(expressionColumn);
+
+  const implicantColumns = document.createElement("div");
+  implicantColumns.className = `flex-col items-stretch divide-x divide-y divide-amber-600/70`;
+  const implicantColumnsTitle = document.createElement("div");
+
+  implicantColumnsTitle.className = `grid grid-cols-[repeat(${minTerms.length},1fr)] divide-x divide-amber-600/70 border-l border-b border-amber-600/70`;
+  minTerms.forEach((m) => {
+    const implicantColumnsMinTerm = document.createElement("p");
+    implicantColumnsMinTerm.className = "text-center w-8 h-8";
+    implicantColumnsMinTerm.innerText = m;
+    implicantColumnsTitle.appendChild(implicantColumnsMinTerm);
+  });
+  implicantColumns.appendChild(implicantColumnsTitle);
+
+  implicantStates.forEach((iState) => {
+    const minTermsInStates = Object.values(iState)[0][1];
+    const implicantColumnsItem = document.createElement("div");
+    implicantColumnsItem.className = `grid grid-cols-[repeat(${minTerms.length},1fr)] divide-x divide-amber-600/70`;
+    minTerms.forEach((m) => {
+      const implicantColumnsMinTerm = document.createElement("p");
+      implicantColumnsMinTerm.className = "text-center w-8 h-8";
+      implicantColumnsMinTerm.innerText = minTermsInStates.includes(m)
+        ? "X"
+        : "";
+      implicantColumnsItem.appendChild(implicantColumnsMinTerm);
+    });
+    implicantColumns.appendChild(implicantColumnsItem);
+  });
+
+  grid.appendChild(implicantColumns);
+
+  outputReductions.appendChild(grid);
 }
 
 function getBinary(num, nBits) {

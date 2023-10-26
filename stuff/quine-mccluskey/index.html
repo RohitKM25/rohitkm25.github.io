@@ -92,59 +92,26 @@
                     </div>
                </div>
                <div class="flex flex-col space-y-2">
-                    <p class="shadate-2 text-2xl">Groups</p>
-                    <div id="output-groups">
+                    <label for="output-groups-collapsed" class="bg-amber-600/10 px-4 py-2">
+                         <p class="shadate-2 text-2xl">Groups</p>
+                    </label>
+                    <input type="checkbox" id="output-groups-collapsed" class="peer hidden">
+                    <div id="output-groups" class="hidden peer-checked:block px-4">
 
                     </div>
                </div>
-               <!-- <div class="flex flex-col space-y-2">
-                    <p class="shadate-2 text-2xl">Reduction</p>
-                    <div id="output-reductions">
-                         <div class="w-fit flex border border-amber-600 text-lg">
-                              <div class="grid grid-cols-1 divide-y divide-amber-600/70">
-                                   <div class="border-b border-amber-600/70 px-2">
-                                        <p>Prime Implicants</p>
-                                   </div>
-                                   <div class="px-2">
-                                        <p>m<sub>2</sub>,m<sub>12</sub>,m<sub>3</sub>,m<sub>4</sub></p>
-                                   </div>
-                                   <div class="px-2">
-                                        <p>m<sub>15</sub>,m<sub>24</sub>,m<sub>23</sub>,m<sub>21</sub></p>
-                                   </div>
-                                   <div class="px-2">
-                                        <p>m<sub>7</sub>,m<sub>8</sub>,m<sub>9</sub>,m<sub>10</sub></p>
-                                   </div>
-                              </div>
-                              <div class="flex-col items-stretch divide-x divide-y divide-amber-600/70 ">
-                                   <div
-                                        class="grid grid-cols-3 divide-x divide-amber-600/70 border-l border-b border-amber-600/70">
-                                        <p class="text-center w-8 h-8">2</p>
-                                        <p class="text-center w-8 h-8">3</p>
-                                        <p class="text-center w-8 h-8">4</p>
-                                   </div>
-                                   <div class="grid grid-cols-3 divide-x divide-amber-600/70">
-                                        <p class="text-center w-8 h-8">X</p>
-                                        <p class="text-center w-8 h-8"></p>
-                                        <p class="text-center w-8 h-8">X</p>
-                                   </div>
-                                   <div class="grid grid-cols-3 divide-x divide-amber-600/70">
-                                        <p class="text-center w-8 h-8">X</p>
-                                        <p class="text-center w-8 h-8">X</p>
-                                        <p class="text-center w-8 h-8"></p>
-                                   </div>
-                                   <div class="grid grid-cols-3 divide-x divide-amber-600/70">
-                                        <p class="text-center w-8 h-8"></p>
-                                        <p class="text-center w-8 h-8"></p>
-                                        <p class="text-center w-8 h-8">X</p>
-                                   </div>
-                              </div>
-                         </div>
+               <div class="flex flex-col space-y-2">
+                    <label for="output-reductions-collapsed" class="bg-amber-600/10 px-4 py-2">
+                         <p class="shadate-2 text-2xl">Reduction</p>
+                    </label>
+                    <input type="checkbox" id="output-reductions-collapsed" class="peer hidden">
+                    <div id="output-reductions" class="hidden flex-col gap-3 peer-checked:flex px-4">
                     </div>
-               </div> -->
+               </div>
           </div>
-          <div class="flex flex-col space-y-2 pt-5 col-span-2">
-               <p class="shadate-2 text-2xl">Output</p>
-               <output id="output-expression" class="text-4xl shadate-4"></output>
+          <div class="flex flex-col space-y-2 pt-2 col-span-2">
+               <p class="shadate-2 text-2xl px-4">Output</p>
+               <output id="output-expression" class="text-4xl shadate-4 px-4"></output>
           </div>
      </div>
      </div>
