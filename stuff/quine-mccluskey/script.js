@@ -194,7 +194,7 @@ function showGroupingGridsFromGroupsSet(groupsSets, compiledGroupSets) {
     currAdjacentGroupsTitle.className = "text-lg font-bold";
 
     const currAdjacentGroups = document.createElement("div");
-    currAdjacentGroups.className = `w-full md:w-fit grid grid-cols-3 grid-rows-[repeat(${groupsSet.length},1fr)] m-2 border border-amber-600`;
+    currAdjacentGroups.className = `w-full md:w-fit max-[300px]:flex flex-col grid grid-cols-3 grid-rows-[repeat(${groupsSet.length},1fr)] my-2 border border-amber-600`;
     currAdjacentGroups.innerHTML = groupsSet
       .map(
         (v, i) =>
@@ -204,7 +204,7 @@ function showGroupingGridsFromGroupsSet(groupsSets, compiledGroupSets) {
             gsi === 0
               ? `Grouping by ${Object.values(v)[0].split("1").length - 1} ones`
               : `Group ${i}->${i + 1}`
-          }</p></div><div class="border-l ${
+          }</p></div><div class="border-l max-[300px]:border-t ${
             i > 0 ? "border-t" : ""
           } border-amber-600/70 px-8 py-2 col-span-2 flex flex-col items-start justify-center">` +
           Object.keys(v)
@@ -351,7 +351,7 @@ function getReductionGridElementFromImplicantStates(implicantStates, minTerms) {
 
   const grid = document.createElement("div");
   grid.className =
-    "w-fit flex border border-amber-600 text-lg flex-none w-fit overflow-x-auto";
+    "w-fit max-w-full flex border border-amber-600 text-lg flex-none w-fit overflow-x-auto";
 
   const groupColumn = document.createElement("div");
   groupColumn.className = `grid grid-cols-1 divide-y divide-amber-600/70 border-r border-amber-600/70 flex-none bg-fuchsia-950`;
